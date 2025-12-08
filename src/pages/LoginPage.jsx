@@ -35,7 +35,7 @@ export function LoginPage() {
         
         console.log('Login berhasil:', data.user);
         // Redirect ke HomePage
-        navigate('/home'); // Ubah dari '/dashboard' ke '/home'
+        navigate('/psikotes'); // Ubah dari '/dashboard' ke '/home'
         
       } catch (err) {
         console.error('Login error:', err);

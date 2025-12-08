@@ -17,34 +17,33 @@ export const PsikotesPage = () => {
   }, []);
 
   const fetchQuestions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  try {
+    setLoading(true);
+    setError(null);
+    
+    const response = await psikotesService.getQuestions();
+    
+    console.log('Response:', response);
+    
+    if (response.status === 200 && response.data) {
+      setQuestions(response.data);
       
-      // Call API untuk get questions
-      const response = await psikotesService.getQuestions();
-      
-      console.log('Response:', response);
-      
-      if (response.status === 200 && response.data) {
-        setQuestions(response.data);
-        
-        // Initialize answers array dengan struktur yang sesuai
-        const initialAnswers = response.data.map(q => ({
-          id_user_question: null, // Akan diisi setelah user submit
-          id_question: q.id_question,
-          type_question: q.type_question,
-          answer: null
-        }));
-        setAnswers(initialAnswers);
-      }
-    } catch (err) {
-      console.error('Error fetching questions:', err);
-      setError(err.message || 'Gagal memuat soal. Silakan coba lagi.');
-    } finally {
-      setLoading(false);
+      // Initialize answers array dengan id_user_question dari response
+      const initialAnswers = response.data.map(q => ({
+        id_user_question: q.id_user_question, // ← GUNAKAN dari response
+        id_question: q.id_question,
+        type_question: q.type_question,
+        answer: null
+      }));
+      setAnswers(initialAnswers);
     }
-  };
+  } catch (err) {
+    console.error('Error fetching questions:', err);
+    setError(err.message || 'Gagal memuat soal. Silakan coba lagi.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleAnswerSelect = (questionIndex, answerValue) => {
     const updatedAnswers = [...answers];
@@ -68,38 +67,39 @@ export const PsikotesPage = () => {
   };
 
   const handleSubmit = async () => {
-    // Validasi: pastikan semua soal sudah dijawab
-    const unanswered = answers.filter(a => a.answer === null);
-    if (unanswered.length > 0) {
-      alert(`Masih ada ${unanswered.length} soal yang belum dijawab!`);
-      return;
-    }
+  // Validasi: pastikan semua soal sudah dijawab
+  const unanswered = answers.filter(a => a.answer === null);
+  if (unanswered.length > 0) {
+    alert(`Masih ada ${unanswered.length} soal yang belum dijawab!`);
+    return;
+  }
 
-    try {
-      setLoading(true);
-      
-      // Format data sesuai yang diharapkan backend
-      const formattedAnswers = answers.map((ans, index) => ({
-        id_user_question: questions[index].id_question, // Atau gunakan ID dari response
-        answer: ans.answer
-      }));
+  try {
+    setLoading(true);
+    
+    // Format data sesuai yang diharapkan backend
+    const formattedAnswers = answers.map((ans) => ({
+      id_user_question: ans.id_user_question, // ← GUNAKAN id_user_question yang benar
+      answer: ans.answer
+    }));
 
-      const result = await psikotesService.submitAnswers(formattedAnswers);
-      
-      console.log('Submit result:', result);
-      
-      if (result.success) {
-        alert('Psikotes berhasil diselesaikan!');
-        // Redirect ke halaman hasil
-        navigate('/results'); // Sesuaikan dengan route Anda
-      }
-    } catch (err) {
-      console.error('Error submitting test:', err);
-      alert('Gagal mengirim jawaban. Silakan coba lagi.');
-    } finally {
-      setLoading(false);
+    console.log('Sending answers:', formattedAnswers); // ← CEK di console
+
+    const result = await psikotesService.submitAnswers(formattedAnswers);
+    
+    console.log('Submit result:', result);
+    
+    if (result.success) {
+      alert('Psikotes berhasil diselesaikan!');
+      navigate('/results');
     }
-  };
+  } catch (err) {
+    console.error('Error submitting test:', err);
+    alert('Gagal mengirim jawaban. Silakan coba lagi.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Loading state
   if (loading) {
