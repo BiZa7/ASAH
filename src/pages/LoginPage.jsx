@@ -1,6 +1,6 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Install: npm install react-router-dom
+import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import ASAH from "../assets/ASAH.svg";
 import google_icon from "../assets/google_icon.svg";
@@ -34,9 +34,8 @@ export function LoginPage() {
         authService.saveUser(data.user);
         
         console.log('Login berhasil:', data.user);
-        
-        // Redirect ke dashboard atau halaman home
-        navigate('/dashboard'); // Sesuaikan dengan route Anda
+        // Redirect ke HomePage
+        navigate('/home'); // Ubah dari '/dashboard' ke '/home'
         
       } catch (err) {
         console.error('Login error:', err);
@@ -49,12 +48,10 @@ export function LoginPage() {
       console.error('Google OAuth Error:', error);
       setError('Login gagal. Silakan coba lagi.');
     },
-    flow: 'auth-code', // Penting: gunakan auth-code flow
+    flow: 'auth-code',
   });
   
   const handleGoogleSignup = () => {
-    // Untuk signup, gunakan fungsi yang sama
-    // Backend akan handle apakah user baru atau existing
     handleGoogleLogin();
   };
   

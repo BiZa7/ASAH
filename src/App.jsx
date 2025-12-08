@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
+import { PsikotesPage } from './pages/PsikotesPage';
 import { authService } from './services/authService';
 
 // Protected Route Component
@@ -14,11 +15,10 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route 
-          path="/dashboard" 
+          path="/psikotes" 
           element={
             <ProtectedRoute>
-              {/* Dashboard Component */}
-              <div>Dashboard Page</div>
+              <PsikotesPage />
             </ProtectedRoute>
           } 
         />

@@ -4,7 +4,7 @@ export const authService = {
   // Login dengan Google
   googleLogin: async (code) => {
     try {
-      const response = await api.post('/login/google/callback', { code });
+      const response = await api.post('/login/google', { code });
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;
