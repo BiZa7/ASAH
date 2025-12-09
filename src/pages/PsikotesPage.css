@@ -1,30 +1,41 @@
 .psikotes-container {
-  min-height: 100vh;
-  background-color: #0B4251;
-  padding: 40px 20px;
+  /* Hapus min-height: 100vh jika sudah ada di #root, 
+     atau ganti menjadi flex: 1 untuk mengisi ruang */
+  flex: 1; 
+  width: 100%;
+  background-color: #F5F5F5;
+  padding: 20px 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
 .psikotes-header {
   width: 100%;
-  max-width: 800px;
-  margin-bottom: 40px;
-  text-align: center;
+  max-width: 3000px;
+  margin-bottom: 20px; /* ✅ Dikurangi */
+  align-self: flex-start;
+  text-align: start;
   color: white;
 }
 
 .psikotes-header h1 {
-  font-size: 32px;
-  margin-bottom: 20px;
-  font-weight: 700;
+  font-size: 40px; /* ✅ Dikurangi */
+  margin-top: 0px;
+  margin-bottom: 15px; /* ✅ Dikurangi */
+  font-weight: 800;
+  color: #0B4251;
 }
 
+.description-text {
+  font-size: 16px; /* ✅ Dikurangi */
+  margin-top: 5px; /* ✅ Dikurangi */
+  margin-bottom: 10px;
+  color: #000000;
+}
 .progress-bar {
   width: 100%;
   height: 10px;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #D9D9D9;
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 10px;
@@ -37,39 +48,40 @@
 }
 
 .progress-text {
-  color: rgba(255, 255, 255, 0.8);
+  color: #0B4251;
+  font-weight: 700;
   font-size: 14px;
 }
 
 .question-card {
   width: 100%;
-  max-width: 800px;
+  max-width: 3000px;
   background-color: white;
   border-radius: 15px;
-  padding: 40px;
+  padding: 30px 60px; /* ✅ Dikurangi */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  margin-bottom: 20px; /* ✅ Dikurangi */
   position: relative;
 }
 
 .question-type-badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: #0B4251;
-  color: white;
-  padding: 5px 15px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  display: inline-block;
+  margin-top: 10px; /* ✅ Dikurangi */
+  margin-bottom: 10px; /* ✅ Ditambahkan */
+  background-color: rgba(248, 227, 175, 0.502);
+  color: rgb(0, 0, 0);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .question-text {
-  font-size: 24px;
+  font-size: 22px; /* ✅ Dikurangi */
   color: #0B4251;
-  margin-bottom: 30px;
+  margin-bottom: 20px; /* ✅ Dikurangi */
   line-height: 1.4;
-  padding-right: 100px;
+  padding-right: 0px; /* ✅ Dihapus */
 }
 
 .options-container {
@@ -98,7 +110,7 @@
   height: 40px;
   background-color: #0B4251;
   color: white;
-  border-radius: 50%;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,13 +178,20 @@
 
 .navigation-buttons {
   display: flex;
-  gap: 20px;
-  max-width: 800px;
+  justify-content: space-between; /* ✅ Kunci: Memisahkan tombol ke ujung kiri & kanan */
+  align-items: center;
   width: 100%;
+  margin-top: 20px; /* Beri jarak sedikit dari opsi jawaban */
 }
 
 .nav-button, .submit-button {
-  flex: 1;
+  /* flex: 1;  <-- ❌ HAPUS INI */
+  flex: none; /* ✅ GANTI JADI INI: Agar tombol tidak melar */
+  
+  width: auto; /* Atau set lebar tetap, misal: 180px */
+  min-width: 150px; /* Opsional: Supaya tombol tidak terlalu kecil */
+  
+  /* Sisa style biarkan sama */
   padding: 15px 30px;
   border: none;
   border-radius: 10px;
@@ -180,6 +199,17 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+
+  display: flex;             /* Mengaktifkan flexbox */
+  align-items: center;       /* Menyejajarkan teks & icon secara vertikal (tengah) */
+  justify-content: center;   /* Menengahkan isi tombol */
+  gap: 10px;
+}
+
+.btn-icon {
+  width: 20px;       /* Sesuaikan ukuran icon (misal 16px - 24px) */
+  height: auto;      /* Jaga rasio aspek gambar */
+  display: block;    /* Menghindari spasi misterius di bawah gambar */
 }
 
 .nav-button {
@@ -215,7 +245,7 @@
 
 .answer-summary {
   margin-top: 20px;
-  color: white;
+  color: #0B4251;
   text-align: center;
   font-size: 16px;
 }
@@ -230,13 +260,13 @@
   align-items: center;
   justify-content: center;
   min-height: 50vh;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
+  border: 4px solid rgba(11, 66, 81, 0.2);
   border-top-color: #F2C864;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -267,4 +297,48 @@
 .retry-button:hover, .back-button:hover {
   background-color: #D9AD38;
   transform: translateY(-2px);
+}
+
+/* Tambahkan di akhir file CSS */
+
+@media (max-width: 1440px) {
+  .psikotes-container {
+    padding: 20px 80px;
+  }
+  
+  .psikotes-header h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .psikotes-container {
+    padding: 20px 40px;
+  }
+  
+  .psikotes-header h1 {
+    font-size: 32px;
+  }
+  
+  .question-card {
+    padding: 25px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .psikotes-container {
+    padding: 15px 20px;
+  }
+  
+  .psikotes-header h1 {
+    font-size: 28px;
+  }
+  
+  .question-card {
+    padding: 20px 25px;
+  }
+  
+  .question-text {
+    font-size: 18px;
+  }
 }

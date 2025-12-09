@@ -1,0 +1,144 @@
+.header {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 12px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header-container {
+  max-width: 2000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo Section */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.logo-section:hover {
+  opacity: 0.8;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1F2937;
+  letter-spacing: 1px;
+}
+
+/* Right Section */
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+/* Dashboard Button */
+.dashboard-link {
+  background-color: transparent;
+  border: none;
+  color: #6B7280;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  text-decoration: none; /* ← Hilangkan underline */
+  display: inline-block;
+}
+
+
+.dashboard-link.active {
+  color: #1F2937;
+  background-color: #F3F4F6;
+}
+
+/* Profile Section */
+.profile-section {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #E5E7EB;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.profile-image:hover {
+  border-color: #F59E0B;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Logout Button */
+.logout-btn {
+  background-color: transparent;
+  border: 1px solid #E5E7EB;
+  color: #6B7280;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: #FEF2F2;
+  border-color: #FCA5A5;
+  color: #DC2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 16px;
+  }
+
+  .logo-text {
+    font-size: 20px;
+  }
+
+  .dashboard-btn {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .logout-btn {
+    display: none; /* Hide on mobile, use dropdown instead */
+  }
+}

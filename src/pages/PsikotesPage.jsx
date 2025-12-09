@@ -1,7 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { psikotesService } from '../services/psikotesService';
 import { useNavigate } from 'react-router-dom';
+import arrowright from "../assets/arrowright.svg";
+import arrowleft from "../assets/arrowleft.svg";
 import './PsikotesPage.css';
+
+
+
+
+const getScaleColor = (val) => {
+  switch (val) {
+    case 5: return '#16A34A'; // Hijau Tua
+    case 4: return '#22C55E'; // Hijau Muda
+    case 3: return '#64748B'; // Kuning
+    case 2: return '#EAB308'; // Oranye
+    case 1: return '#EF4444'; // Merah
+    default: return '#0B4251'; 
+  }
+};
+
 
 export const PsikotesPage = () => {
   const [questions, setQuestions] = useState([]);
@@ -11,6 +28,18 @@ export const PsikotesPage = () => {
   const [answers, setAnswers] = useState([]);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // 1. Simpan warna background original (Hijau)
+    const originalStyle = document.body.style.backgroundColor;
+    
+    // 2. Ubah background body jadi abu-abu saat masuk halaman ini
+    document.body.style.backgroundColor = '#F5F5F5';
+
+    // 3. Kembalikan ke hijau saat user keluar dari halaman ini (Unmount)
+    return () => {
+      document.body.style.backgroundColor = originalStyle;
+    };
+  }, []);
   // Fetch questions saat component mount
   useEffect(() => {
     fetchQuestions();
@@ -24,6 +53,8 @@ export const PsikotesPage = () => {
     const response = await psikotesService.getQuestions();
     
     console.log('Response:', response);
+    console.log('First question detail:', response.data[0]); // ← TAMBAHKAN INI
+    console.log('Numeric question detail:', response.data[15]); // ← TAMBAHKAN INI (untuk soal Numeric)
     
     if (response.status === 200 && response.data) {
       setQuestions(response.data);
@@ -107,7 +138,7 @@ export const PsikotesPage = () => {
       <div className="psikotes-container">
         <div className="loading">
           <div className="spinner"></div>
-          <p>Memuat soal...</p>
+          <p >Memuat soal...</p>
         </div>
       </div>
     );
@@ -152,29 +183,30 @@ export const PsikotesPage = () => {
   return (
     <div className="psikotes-container">
       <div className="psikotes-header">
-        <h1>Tes Psikologi - {currentQuestion.type_question}</h1>
+        <h1>Tes Psikologi</h1>
+        <p className='description-text'>Selesaikan penilaian OCEAN dan Aptitude untuk menerima rekomendasi karier yang dipersonalisasi. </p>
+        <p className="progress-text">
+          Pertanyaan {currentQuestionIndex + 1} dari {questions.length}
+        </p>
         <div className="progress-bar">
           <div 
             className="progress-fill" 
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        <p className="progress-text">
-          Soal {currentQuestionIndex + 1} dari {questions.length}
-        </p>
-      </div>
-
-      <div className="question-card">
         <div className="question-type-badge">
           {currentQuestion.type_question}
         </div>
+      </div>
+
+      <div className="question-card">
         <h2 className="question-text">{currentQuestion.question}</h2>
         
         <div className="options-container">
           {isOceanQuestion ? (
-            // OCEAN Questions: Likert Scale (1-5)
+            // OCEAN Questions: Likert Scale (5-1)
             <>
-              {[1, 2, 3, 4, 5].map((value) => (
+              {[5, 4, 3, 2, 1].map((value) => (
                 <button
                   key={value}
                   className={`option-button ${
@@ -182,7 +214,7 @@ export const PsikotesPage = () => {
                   }`}
                   onClick={() => handleAnswerSelect(currentQuestionIndex, value)}
                 >
-                  <span className="option-value">{value}</span>
+                  
                   <span className="option-label">
                     {value === 1 && 'Sangat Tidak Setuju'}
                     {value === 2 && 'Tidak Setuju'}
@@ -190,69 +222,103 @@ export const PsikotesPage = () => {
                     {value === 4 && 'Setuju'}
                     {value === 5 && 'Sangat Setuju'}
                   </span>
+
+                  <span 
+                    className="option-value"
+                    style={{ 
+                      backgroundColor: getScaleColor(value),
+                      
+                      color: 'white',
+                      // Opsional: Agar border tidak bentrok warnanya
+                      borderColor: 'transparent' 
+                    }}
+                  >
+                    {value}
+                  </span> 
                 </button>
               ))}
             </>
           ) : (
             // Aptitude Questions: Multiple Choice (A, B, C, D)
             <>
-              {['A', 'B', 'C', 'D'].map((option) => (
-                <button
-                  key={option}
-                  className={`option-button ${
-                    currentAnswer?.answer === option ? 'selected' : ''
-                  }`}
-                  onClick={() => handleAnswerSelect(currentQuestionIndex, option)}
-                >
-                  <span className="option-letter">{option}</span>
-                </button>
-              ))}
+              {['A', 'B', 'C', 'D'].map((letter) => {
+                // 1. Buat key dinamis (misal: "option" + "A" = "optionA")
+                const optionKey = `option${letter}`; 
+                
+                // 2. Ambil teks jawaban dari data backend menggunakan key tersebut
+                const optionText = currentQuestion[optionKey];
+
+                console.log(optionText);
+                
+
+                return (
+                  <button
+                    key={letter}
+                    className={`option-button ${
+                      currentAnswer?.answer === optionText ? 'selected' : ''
+                    }`}
+                    // Tetap kirim 'letter' (A/B/C/D) jika itu yang ingin disimpan di DB
+                    onClick={() => handleAnswerSelect(currentQuestionIndex, optionText)}
+                  >
+                    {/* Tampilkan Huruf */}
+                    <span className="option-letter">{letter}. </span>
+                    
+                    {/* Tampilkan Teks Jawaban (Efisien, Manjur, dll) */}
+                    <span className="option-text">{optionText}</span>
+                  </button>
+                );
+              })}
             </>
+            
           )}
         </div>
 
-        {/* Show explanation if available (only after answering) */}
+        {/* Show explanation if available (only after answering) 
         {currentAnswer?.answer && currentQuestion.explanation && (
           <div className="explanation">
             <h4>Penjelasan:</h4>
             <p>{currentQuestion.explanation}</p>
           </div>
-        )}
+        )}*/}
+        <div className="navigation-buttons">
+          <button
+            onClick={handlePrevious}
+            disabled={currentQuestionIndex === 0}
+            className="nav-button prev-button"
+          >
+            <img src={arrowleft} alt="Arrow Left" className="btn-icon" />
+            Sebelumnya
+          </button>
+          
+          {isLastQuestion ? (
+            <button
+              onClick={handleSubmit}
+              className="submit-button"
+              disabled={answers.some(a => a.answer === null)}
+            >
+              Selesai ✓
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              className="nav-button next-button"
+            >
+              Selanjutnya
+              {/* Masukkan gambar di sini, beri class agar mudah diatur ukurannya */}
+              <img src={arrowright} alt="Arrow Right" className="btn-icon" />
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="navigation-buttons">
-        <button
-          onClick={handlePrevious}
-          disabled={currentQuestionIndex === 0}
-          className="nav-button prev-button"
-        >
-          ← Sebelumnya
-        </button>
-        
-        {isLastQuestion ? (
-          <button
-            onClick={handleSubmit}
-            className="submit-button"
-            disabled={answers.some(a => a.answer === null)}
-          >
-            Selesai ✓
-          </button>
-        ) : (
-          <button
-            onClick={handleNext}
-            className="nav-button next-button"
-          >
-            Selanjutnya →
-          </button>
-        )}
-      </div>
+      
 
-      {/* Show answered count */}
+      {/* Show answered count 
       <div className="answer-summary">
         <p>
           Terjawab: <strong>{answers.filter(a => a.answer !== null).length}</strong> dari {questions.length}
         </p>
-      </div>
+      </div>*/}
     </div>
   );
 };

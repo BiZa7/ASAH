@@ -1,6 +1,6 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // 1. Tambah useLocation
 import { authService } from '../services/authService';
 import ASAH from "../assets/ASAH.svg";
 import google_icon from "../assets/google_icon.svg";
@@ -19,6 +19,7 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation(); // 2. Inisialisasi useLocation
 
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (codeResponse) => {
@@ -34,8 +35,13 @@ export function LoginPage() {
         authService.saveUser(data.user);
         
         console.log('Login berhasil:', data.user);
-        // Redirect ke HomePage
-        navigate('/psikotes'); // Ubah dari '/dashboard' ke '/home'
+
+        // 3. LOGIC REDIRECT DINAMIS DI SINI
+        // Cek apakah ada request redirect dari Landing Page?
+        // Jika tidak ada (null/undefined), default ke '/home'
+        const destination = location.state?.redirectPath || '/home';
+        
+        navigate(destination); 
         
       } catch (err) {
         console.error('Login error:', err);
@@ -55,6 +61,7 @@ export function LoginPage() {
     handleGoogleLogin();
   };
   
+  // ... (Sisa kode JSX return tetap sama, tidak ada perubahan tampilan)
   return (
     <div className="page-wrapper">
       <div className="container">

@@ -1,22 +1,29 @@
-/* LoginPage.css */
+
 .page-wrapper {
-  height: 100vh;
+  /* GUNAKAN FIXED POSITION: Ini memaksa halaman menempel di layar & tidak bisa scroll */
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 100vw;
+  height: 100%;
+  overflow: hidden; 
+  
+  background-color: #0B4251;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  z-index: 10;
 }
 
 .container {
   flex: 1; 
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center; /* Ubah ke center agar seimbang */
   align-items: center;
-  padding: 0px 100px;
-  gap: 60px;
-  max-width: 100%;
-  overflow: hidden;
+  padding: 0 50px; /* Kurangi padding agar muat di layar laptop */
+  gap: 100px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .login-card {
@@ -39,35 +46,33 @@
 
 .hero-container {
   flex: 1;
-  max-width: 800px;
-  margin-right: 0;
-  padding: 60px;
-  background-color: transparent;
-  border: none;
+  max-width: 700px;
+  padding: 40px;
   color: white;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
 }
 
 .hero-title {
-  font-size: 48px;
+  font-size: 44px;
   font-weight: 800;
   line-height: 1.2;
+  
+  /* SOLUSI TEKS HILANG: Gunakan !important untuk memaksa warna putih */
+  color: #ffffff !important; 
   margin: 0;
 }
 
 .hero-title .highlight {
-  color: #F2C864;
+  color: #F2C864 !important; /* Pastikan kuning juga dipaksa */
 }
 
 .hero-description {
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 28px;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .hero-features {
