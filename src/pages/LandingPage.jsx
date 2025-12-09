@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
+import ASAH from "../assets/ASAH.svg";
 
 // Kamu bisa ganti ini dengan icon dari library seperti react-icons atau asset SVG kamu
 const UserIcon = () => <span style={{fontSize: '24px', marginRight: '8px'}}>👥</span>;
@@ -26,7 +27,7 @@ export const LandingPage = () => {
       <nav className="landing-nav">
         <div className="nav-logo">
            {/* Ganti dengan <img src={logo} /> jika ada */}
-           ASAH
+          <img  className="nav-logo-img" src={ASAH} alt="ASAH Logo" />
         </div>
         <button className="btn-get-started" onClick={handleGetStarted}>
           Get Started

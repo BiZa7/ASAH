@@ -1,7 +1,7 @@
 .header {
   background-color: #FFFFFF;
   border-bottom: 1px solid #E5E7EB;
-  padding: 12px 24px;
+  padding: 12px 150px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -50,6 +50,11 @@
   letter-spacing: 1px;
 }
 
+.logo-image {
+  width: 100px;
+  height: 40px;
+  object-fit: contain;
+}
 /* Right Section */
 .right-section {
   display: flex;

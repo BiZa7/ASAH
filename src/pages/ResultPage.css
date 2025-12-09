@@ -1,0 +1,190 @@
+.result-page {
+  min-height: 100vh;
+  background-color: #f5f5f5; /* Warna background halaman */
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.result-container {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header Section */
+.result-header-section {
+  text-align: center;
+  margin-bottom: 50px;
+  max-width: 800px;
+}
+
+.trophy-icon-container {
+  width: 60px;
+  height: 60px;
+  background-color: #F2C864; /* Kuning background trophy */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.result-title {
+  color: #0B4251; /* Biru Gelap */
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.result-subtitle-container {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.result-subtitle {
+  color: #0B4251;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Grid Layout */
+.career-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 Kolom */
+  gap: 30px;
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+/* Responsive Grid: Jadi 2 kolom di tablet, 1 kolom di HP */
+@media (max-width: 1024px) {
+  .career-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .career-grid {
+    grid-template-columns: 1fr;
+  }
+  .result-title {
+    font-size: 28px;
+  }
+}
+
+/* Card Styling */
+.career-card {
+  background-color: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.career-card:hover {
+  transform: translateY(-5px);
+  border-color: #F2C864;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.card-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #0B4251;
+  border-radius: 50%;
+  padding: 4.5px;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+}
+
+.match-percentage {
+  font-weight: 700;
+  color: #0B4251;
+  font-size: 16px;
+}
+
+.career-title {
+  color: #0B4251;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.career-desc {
+  color: #4A5568;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  flex-grow: 1; /* Agar tinggi card seragam */
+}
+
+/* Skills Tags */
+.skills-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skills-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0B4251;
+  font-style: italic;
+  margin: 0;
+}
+
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tag {
+  background-color: #F2C864; /* Kuning tag */
+  color: #0B4251;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* Bottom Button */
+.bottom-action {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 40px;
+}
+
+.btn-generate {
+  background-color: #F2C864;
+  color: #0B4251;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 15px rgba(242, 200, 100, 0.4);
+}
+
+.btn-generate:hover {
+  background-color: #D9AD38;
+  transform: translateY(-2px);
+}

@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
 import { PsikotesPage } from './pages/PsikotesPage';
-import { LandingPage } from './pages/LandingPage'; // 1. Import Landing Page
+import { LandingPage } from './pages/LandingPage';
+// 1. IMPORT PAGE BARU
+import { ResultPage } from './pages/ResultPage';
+import { RoadmapPage } from './pages/RoadmapPage';
 import { Header } from './components/Header';
 import { authService } from './services/authService';
 
@@ -15,15 +18,13 @@ const ProtectedRoute = ({ children }) => {
 const AppContent = () => {
   const location = useLocation();
   
-  // 2. Update Logika Header:
-  // Header TIDAK muncul di '/login' DAN TIDAK muncul di '/' (Landing Page)
+  // Header TIDAK muncul di '/login' DAN TIDAK muncul di '/'
   const showHeader = location.pathname !== '/login' && location.pathname !== '/';
 
   return (
     <>
       {showHeader && <Header />} 
       <Routes>
-        {/* 3. Ubah Route root ('/') menjadi LandingPage */}
         <Route path="/" element={<LandingPage />} />
         
         <Route path="/login" element={<LoginPage />} />
@@ -37,7 +38,26 @@ const AppContent = () => {
           } 
         />
         
-        {/* Opsional: Tangani halaman 404 atau redirect sembarang url ke landing page */}
+        {/* 2. TAMBAHKAN ROUTE HASIL (Protected karena butuh data user/tes) */}
+        <Route 
+          path="/results" 
+          element={
+            <ProtectedRoute>
+              <ResultPage />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* 3. TAMBAHKAN ROUTE ROADMAP (Protected) */}
+        <Route 
+          path="/roadmap" 
+          element={
+            <ProtectedRoute>
+              <RoadmapPage />
+            </ProtectedRoute>
+          } 
+        />
+        
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>

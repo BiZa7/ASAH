@@ -120,9 +120,10 @@ export const PsikotesPage = () => {
     
     console.log('Submit result:', result);
     
+    // ... di dalam handleSubmit
     if (result.success) {
       alert('Psikotes berhasil diselesaikan!');
-      navigate('/results');
+      navigate('/results'); // ✅ Ini sudah benar sesuai route baru di App.js
     }
   } catch (err) {
     console.error('Error submitting test:', err);
