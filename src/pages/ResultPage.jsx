@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // 1. Import Hooks
 import { useNavigate } from 'react-router-dom';
 import './ResultPage.css';
-// Import icon panah kamu jika ingin dipakai di tombol bawah
+// Import service API
+import { optionCareer } from '../services/roadmapService'; // Pastikan path-nya benar
+
+// Assets
 import trophy from "../assets/trophy.svg";
 import arrowright from "../assets/arrowright.svg"; 
 import barchart from "../assets/barchart.svg";
@@ -9,55 +12,63 @@ import barchart from "../assets/barchart.svg";
 export const ResultPage = () => {
   const navigate = useNavigate();
 
-  // Data Dummy untuk meniru desain
-  const careerMatches = [
-    {
-      id: 1,
-      title: "Data Analyst",
-      percentage: 92,
-      description: "Analisis kumpulan data kompleks untuk membantu perusahaan membuat keputusan bisnis yang tepat. Bekerja dengan Statistical Tools dan Visualization Software.",
-      skills: ["Python", "SQL", "Data Visualization", "Statistic", "Excel"]
-    },
-    {
-      id: 2,
-      title: "Data Scientist",
-      percentage: 88,
-      description: "Mengembangkan model machine learning dan algoritma canggih untuk memprediksi tren masa depan dan memecahkan masalah bisnis yang kompleks.",
-      skills: ["Python", "Machine Learning", "Deep Learning", "Big Data", "Math"]
-    },
-    {
-      id: 3,
-      title: "Business Intelligence",
-      percentage: 85,
-      description: "Mengubah data mentah menjadi wawasan bisnis yang dapat ditindaklanjuti melalui dashboard interaktif dan pelaporan strategis.",
-      skills: ["Tableau", "Power BI", "SQL", "Data Modeling", "Communication"]
-    },
-    {
-      id: 4,
-      title: "Data Engineer",
-      percentage: 80,
-      description: "Membangun dan memelihara arsitektur data, pipeline, dan sistem database untuk memastikan data tersedia dan siap dianalisis.",
-      skills: ["ETL", "Cloud Computing", "Python", "Java", "Database Design"]
-    },
-    {
-      id: 5,
-      title: "Product Analyst",
-      percentage: 78,
-      description: "Menganalisis perilaku pengguna dan metrik produk untuk meningkatkan pengalaman pengguna dan mendorong pertumbuhan produk.",
-      skills: ["Product Analytics", "A/B Testing", "SQL", "User Research", "Excel"]
-    },
-    {
-      id: 6,
-      title: "Statistician",
-      percentage: 75,
-      description: "Menerapkan teori dan metode statistik untuk mengumpulkan, menganalisis, dan menafsirkan data kuantitatif dalam berbagai industri.",
-      skills: ["R", "SPSS", "Mathematics", "Probability", "Research"]
-    }
-  ];
+  // 2. Buat State untuk data dan loading status
+  const [careerMatches, setCareerMatches] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 3. Panggil API saat komponen di-mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await optionCareer.getOptionsCareer();
+
+        // Cek apakah response sukses dan memiliki data
+        if (response.success && Array.isArray(response.data)) {
+          
+          // 4. Mapping Data (PENTING!)
+          // API kamu mengembalikan: id_career, name, description
+          // UI kamu butuh: id, title, percentage, description, skills
+          // Kita harus konversi formatnya:
+          const mappedData = response.data.map((item) => ({
+            id: item.id_career,
+            title: item.name,        // API: name -> UI: title
+            description: item.description,
+            
+            // Note: Karena API di prompt sebelumnya belum return percentage & skills,
+            // kita beri nilai default/random dulu agar UI tidak error.
+            // Nanti sesuaikan jika API sudah mengirim data ini.
+            percentage: item.similarity ? Math.round(item.similarity * 100) : 85, 
+            skills: item.skills || ["Skill A", "Skill B", "Skill C"] 
+          }));
+
+          setCareerMatches(mappedData);
+        }
+      } catch (err) {
+        console.error("Error fetching careers:", err);
+        setError("Gagal memuat rekomendasi karir.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleGenerateRoadmap = () => {
     navigate('/roadmap');
   };
+
+  // Tampilan saat Loading
+  if (isLoading) {
+    return <div className="result-page" style={{display:'flex', justifyContent:'center', alignItems:'center'}}>Loading...</div>;
+  }
+
+  // Tampilan saat Error
+  if (error) {
+    return <div className="result-page" style={{display:'flex', justifyContent:'center', alignItems:'center'}}>{error}</div>;
+  }
 
   return (
     <div className="result-page">
@@ -79,11 +90,11 @@ export const ResultPage = () => {
 
         {/* Grid Cards */}
         <div className="career-grid">
+          {/* Render data dari State */}
           {careerMatches.map((career) => (
             <div key={career.id} className="career-card">
               <div className="card-top">
                 <div className="card-icon">
-                  {/* Icon grafik placeholder */}
                   <span style={{color: '#F2C864', fontSize: '20px'}}>
                     <img src={barchart} alt="Bar Chart" style={{width: '24px', height: '24px'}} />
                   </span>
@@ -97,7 +108,8 @@ export const ResultPage = () => {
               <div className="skills-section">
                 <p className="skills-label">Key Skills</p>
                 <div className="skills-tags">
-                  {career.skills.map((skill, index) => (
+                  {/* Pastikan skills ada sebelum di-map untuk menghindari error */}
+                  {career.skills && career.skills.map((skill, index) => (
                     <span key={index} className="skill-tag">{skill}</span>
                   ))}
                 </div>
