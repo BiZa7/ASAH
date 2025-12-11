@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import { Chatbot } from '../components/Chatbot';
 import './ModulPage.css';
 import { 
   CheckCircle2, 
@@ -26,7 +27,6 @@ export const ModulPage = () => {
   ]);
 
   const [activeId, setActiveId] = useState(1);
-  const [chatInput, setChatInput] = useState("");
 
   // 2. Logic cek apakah Kuis sudah boleh terbuka
   // Kuis terbuka jika modul TERAKHIR (index 4 / ID 5) sudah 'completed'
@@ -249,17 +249,10 @@ export const ModulPage = () => {
               <p>Asisten belajar kamu</p>
             </div>
           </div>
-          <div className="chat-area">
-            <div className="empty-state">
-              <p>Halo! Ada yang bisa saya bantu?</p>
-            </div>
-          </div>
-          <div className="chat-input-wrapper">
-            <div className="chat-input-container">
-              <input type="text" placeholder="Tanyakan apapun..." value={chatInput} onChange={(e) => setChatInput(e.target.value)} />
-              <button className="btn-send"><SendHorizontal size={18} /></button>
-            </div>
-            <p className="ai-disclaimer">AI dapat membuat kesalahan.</p>
+
+          {/* CHATBOT COMPONENT DIPASANG DI SINI */}
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+             <Chatbot />
           </div>
         </aside>
       </div>
