@@ -1,0 +1,501 @@
+/* Layout Utama */
+.roadmap-page-wrapper {
+  min-height: 100vh;
+  background-color: #F8F9FA;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.roadmap-content-container {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Header Section */
+.roadmap-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-icon-box {
+  width: 50px;
+  height: 50px;
+  background-color: #F2C864;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(242, 200, 100, 0.3);
+}
+
+.header-text-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title {
+  color: #0B4251;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.header-subtitle {
+  color: #555;
+  font-size: 14px;
+  margin: 4px 0 0 0;
+}
+
+/* Progress Card */
+.progress-card-roadmap {
+  background-color: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.progress-title {
+  color: #0B4251;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+}
+
+.progress-subtitle {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.progress-percentage-box {
+  text-align: right;
+}
+
+.percentage-text {
+  display: block;
+  color: #F2C864;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.percentage-label {
+  color: #0B4251;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 12px;
+  background-color: #E5E7EB;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #F2C864;
+  border-radius: 20px;
+  transition: width 0.5s ease;
+}
+
+/* --- MODULES LIST (Accordion) --- */
+.modules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.module-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Main Module Card */
+.module-card {
+  background-color: white;
+  border-radius: 15px;
+  padding: 20px 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.module-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.module-card.active {
+  border-color: #F2C864;
+  background-color: #FFFDF5;
+}
+
+.module-icon-box {
+  width: 45px;
+  height: 45px;
+  background-color: #0B4251;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.module-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.module-title {
+  color: #0B4251;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.module-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 13px;
+}
+
+.module-action {
+  color: #0B4251;
+  display: flex;
+  align-items: center;
+}
+
+/* --- SUB MODULES (Accordion Expanded) --- */
+.sub-modules-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 5px 15px 15px 15px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sub-module-card {
+  background-color: rgba(251, 240, 213, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  border: 1px solid #E5E7EB;
+  align-items: flex-start;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.sub-module-card:hover {
+  border-color: #F2C864;
+}
+
+/* --- LOCKED STATE STYLES (NEW) --- */
+/* Tampilan Kartu saat Locked (Agak transparan/abu) */
+.sub-module-card.locked-card {
+  background-color: #FAFAFA; /* Sedikit lebih gelap dari putih */
+  opacity: 0.9;
+}
+
+.sub-module-card.locked-card .sub-title {
+  color: #6B7280; /* Judul jadi abu-abu */
+}
+
+/* Hover pada kartu locked tidak perlu border kuning */
+.sub-module-card.locked-card:hover {
+  border-color: #E5E7EB; 
+}
+/* ---------------------------------- */
+
+.sub-module-number {
+  width: 32px;
+  height: 32px;
+  background-color: #F2C864;
+  color: #0B4251;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.sub-module-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sub-module-card.locked-card .sub-module-number {
+  background-color: #E5E7EB; /* Background Abu-abu */
+  color: #9CA3AF; /* Teks Angka Abu-abu Gelap */
+}
+
+.sub-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sub-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0B4251;
+}
+
+/* 1. Badge Kuning (Available) */
+.badge-yellow {
+  background-color: #FEF3C7;
+  color: #D97706;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* 2. Badge Abu-abu (Locked) */
+.badge-gray {
+  background-color: #F3F4F6;
+  color: #6B7280;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.sub-desc {
+  margin: 0;
+  font-size: 14px;
+  color: #4B5563;
+  line-height: 1.5;
+}
+
+.sub-tags {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tag-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9CA3AF;
+  text-transform: uppercase;
+}
+
+.tags-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.source-tag {
+  background-color: #F3F4F6;
+  color: #4B5563;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #E5E7EB;
+}
+
+.btn-arrow-action {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #0B4251;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+  align-self: center;
+}
+
+.btn-arrow-action:hover {
+  background-color: #F3F4F6;
+}
+
+/* --- BUTTON LOCKED STATE --- */
+.btn-arrow-action.btn-locked {
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.btn-arrow-action.btn-locked:hover {
+  background-color: transparent; /* Tidak ada efek hover */
+}
+/* -------------------------- */
+
+/* --- MODAL POPUP --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background-color: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  animation: scaleUp 0.3s ease;
+}
+
+.modal-desc {
+  font-size: 14px;
+  color: #6B7280; /* Abu-abu sedang */
+  margin-top: 0;
+  margin-bottom: 20px; /* Jarak ke badge durasi */
+  line-height: 1.5;
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 600;
+  color: #0B4251;
+  line-height: 1.4;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9CA3AF;
+  padding: 0;
+}
+
+.btn-close:hover {
+  color: #374151;
+}
+
+.modal-badge-row {
+  margin-bottom: 25px;
+}
+
+.duration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #F8E3AF;
+  color: black;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.modal-learning-section h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 15px;
+}
+
+.learning-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.learning-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #4B5563;
+}
+
+.btn-start-learning {
+  width: 100%;
+  background-color: #F2C864;
+  color: black;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.3s;
+}
+
+.btn-start-learning:hover {
+  background-color: #08333e;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-title { font-size: 20px; }
+  .module-card { padding: 15px; }
+  .sub-module-card { padding: 15px; gap: 10px; }
+  .sub-module-number { width: 24px; height: 24px; font-size: 12px; }
+}

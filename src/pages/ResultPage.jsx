@@ -57,7 +57,7 @@ export const ResultPage = () => {
   }, []);
 
   const handleGenerateRoadmap = () => {
-    navigate('/roadmap');
+    navigate('/roadmap-loading');
   };
 
   // Tampilan saat Loading

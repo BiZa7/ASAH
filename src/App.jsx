@@ -4,6 +4,7 @@ import { PsikotesPage } from './pages/PsikotesPage';
 import { LandingPage } from './pages/LandingPage';
 // 1. IMPORT PAGE BARU
 import { ResultPage } from './pages/ResultPage';
+import { RoadmapLoadingPage } from './pages/RoadmapLoadingPage';
 import { RoadmapPage } from './pages/RoadmapPage';
 import { Header } from './components/Header';
 import { authService } from './services/authService';
@@ -47,8 +48,16 @@ const AppContent = () => {
             </ProtectedRoute>
           } 
         />
-
-        {/* 3. TAMBAHKAN ROUTE ROADMAP (Protected) */}
+        {/* 3. TAMBAHKAN ROUTE LOADING PAGE (Protected) */}
+        <Route 
+          path="/roadmap-loading" 
+          element={
+            <ProtectedRoute>
+              <RoadmapLoadingPage />
+            </ProtectedRoute>
+          } 
+        />
+        {/* 4. TAMBAHKAN ROUTE ROADMAP (Protected) */}
         <Route 
           path="/roadmap" 
           element={

@@ -122,7 +122,6 @@ export const PsikotesPage = () => {
     
     // ... di dalam handleSubmit
     if (result.success) {
-      alert('Psikotes berhasil diselesaikan!');
       navigate('/results'); // ✅ Ini sudah benar sesuai route baru di App.js
     }
   } catch (err) {
