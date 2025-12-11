@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'; // 1. Import Hooks
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ResultPage.css';
-// Import service API
-import { optionCareer } from '../services/roadmapService'; // Pastikan path-nya benar
+// Import service
+import { optionCareer } from '../services/roadmapService'; 
 
 // Assets
 import trophy from "../assets/trophy.svg";
@@ -12,48 +12,54 @@ import barchart from "../assets/barchart.svg";
 export const ResultPage = () => {
   const navigate = useNavigate();
 
-  // 2. Buat State untuk data dan loading status
   const [careerMatches, setCareerMatches] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 3. Panggil API saat komponen di-mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchExistingData = async () => {
       try {
         setIsLoading(true);
+        
+        // 1. PERBAIKAN: Gunakan method GET (getOptionsCareer), bukan POST
         const response = await optionCareer.getOptionsCareer();
 
-        // Cek apakah response sukses dan memiliki data
-        if (response.success && Array.isArray(response.data)) {
+        console.log("Full Response (GET):", response); 
+
+        // 2. Cek response success
+        if (response.success) {
           
-          // 4. Mapping Data (PENTING!)
-          // API kamu mengembalikan: id_career, name, description
-          // UI kamu butuh: id, title, percentage, description, skills
-          // Kita harus konversi formatnya:
-          const mappedData = response.data.map((item) => ({
-            id: item.id_career,
-            title: item.name,        // API: name -> UI: title
-            description: item.description,
+          const rawData = response.data || [];
+
+          // 4. Mapping Data
+          const mappedData = rawData.map((item, index) => ({
+            // Gunakan optional chaining (?.)
+            id: item.id_career || index, 
+            title: item.name || "Nama Karir Tidak Tersedia", 
+            description: item.description || "Deskripsi belum tersedia",
             
-            // Note: Karena API di prompt sebelumnya belum return percentage & skills,
-            // kita beri nilai default/random dulu agar UI tidak error.
-            // Nanti sesuaikan jika API sudah mengirim data ini.
-            percentage: item.similarity ? Math.round(item.similarity * 100) : 85, 
-            skills: item.skills || ["Skill A", "Skill B", "Skill C"] 
+            // Konversi similarity ke persentase
+            percentage: item.similarity ? Math.round(Number(item.similarity) * 100) : 0, 
+            
+            // Default skills (karena endpoint GET backend belum return skills array)
+            skills: item.skills || ["Analytical", "Problem Solving", "Critical Thinking"] 
           }));
 
           setCareerMatches(mappedData);
+        } else {
+            // Tampilkan pesan error dari backend jika success: false
+            setError(response.message || "Gagal mendapatkan data rekomendasi.");
         }
+
       } catch (err) {
-        console.error("Error fetching careers:", err);
-        setError("Gagal memuat rekomendasi karir.");
+        console.error("Error fetching recommendation:", err);
+        setError("Gagal memuat rekomendasi karir. Pastikan Anda sudah login atau melakukan tes.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchExistingData();
   }, []);
 
   const handleGenerateRoadmap = () => {
@@ -62,12 +68,22 @@ export const ResultPage = () => {
 
   // Tampilan saat Loading
   if (isLoading) {
-    return <div className="result-page" style={{display:'flex', justifyContent:'center', alignItems:'center'}}>Loading...</div>;
+    return (
+        <div className="result-page" style={{display:'flex', justifyContent:'center', alignItems:'center', height: '100vh'}}>
+            <div className="spinner"></div> 
+            <p style={{marginLeft: '10px'}}>Memuat rekomendasi...</p>
+        </div>
+    );
   }
 
   // Tampilan saat Error
   if (error) {
-    return <div className="result-page" style={{display:'flex', justifyContent:'center', alignItems:'center'}}>{error}</div>;
+    return (
+        <div className="result-page" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', height: '100vh'}}>
+            <p style={{color: 'red', marginBottom: '10px'}}>{error}</p>
+            <button onClick={() => window.location.reload()} style={{padding: '10px 20px', cursor:'pointer'}}>Coba Lagi</button>
+        </div>
+    );
   }
 
   return (
@@ -84,38 +100,40 @@ export const ResultPage = () => {
             <p className="result-subtitle">
             Berdasarkan hasil tes kepribadian dan bakatmu, kami telah menentukan jalur karier 
             yang paling sesuai. Pilih salah satu untuk mulai menyusun roadmap pembelajaranmu.
-          </p>
+            </p>
           </div>
         </div>
 
         {/* Grid Cards */}
         <div className="career-grid">
-          {/* Render data dari State */}
-          {careerMatches.map((career) => (
-            <div key={career.id} className="career-card">
-              <div className="card-top">
-                <div className="card-icon">
-                  <span style={{color: '#F2C864', fontSize: '20px'}}>
-                    <img src={barchart} alt="Bar Chart" style={{width: '24px', height: '24px'}} />
-                  </span>
+          {careerMatches.length > 0 ? (
+            careerMatches.map((career) => (
+                <div key={career.id} className="career-card">
+                <div className="card-top">
+                    <div className="card-icon">
+                    <span style={{color: '#F2C864', fontSize: '20px'}}>
+                        <img src={barchart} alt="Bar Chart" style={{width: '24px', height: '24px'}} />
+                    </span>
+                    </div>
+                    <span className="match-percentage">{career.percentage}% Match</span>
                 </div>
-                <span className="match-percentage">{career.percentage}% Match</span>
-              </div>
-              
-              <h3 className="career-title">{career.title}</h3>
-              <p className="career-desc">{career.description}</p>
-              
-              <div className="skills-section">
-                <p className="skills-label">Key Skills</p>
-                <div className="skills-tags">
-                  {/* Pastikan skills ada sebelum di-map untuk menghindari error */}
-                  {career.skills && career.skills.map((skill, index) => (
-                    <span key={index} className="skill-tag">{skill}</span>
-                  ))}
+                
+                <h3 className="career-title">{career.title}</h3>
+                <p className="career-desc">{career.description}</p>
+                
+                <div className="skills-section">
+                    <p className="skills-label">Key Skills</p>
+                    <div className="skills-tags">
+                    {career.skills.map((skill, index) => (
+                        <span key={index} className="skill-tag">{skill}</span>
+                    ))}
+                    </div>
                 </div>
-              </div>
-            </div>
-          ))}
+                </div>
+            ))
+          ) : (
+              <p>Tidak ada rekomendasi karir yang ditemukan.</p>
+          )}
         </div>
 
         {/* Bottom Action Button */}
