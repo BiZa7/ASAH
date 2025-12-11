@@ -15,6 +15,7 @@ export const ResultPage = () => {
   const [careerMatches, setCareerMatches] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCardId, setSelectedCardId] = useState(null);
 
   useEffect(() => {
     const fetchExistingData = async () => {
@@ -62,8 +63,20 @@ export const ResultPage = () => {
     fetchExistingData();
   }, []);
 
+
+  const handleCardClick = (id) => {
+    // Jika diklik lagi, batalkan pilihan (toggle), atau langsung set ID baru
+    if (selectedCardId === id) {
+      setSelectedCardId(null);
+    } else {
+      setSelectedCardId(id);
+    }
+  };
+
   const handleGenerateRoadmap = () => {
-    navigate('/roadmap-loading');
+    if (selectedCardId) {
+      navigate('/roadmap-loading', { state: { selectedCareerId: selectedCardId } });
+    }
   };
 
   // Tampilan saat Loading
@@ -108,7 +121,11 @@ export const ResultPage = () => {
         <div className="career-grid">
           {careerMatches.length > 0 ? (
             careerMatches.map((career) => (
-                <div key={career.id} className="career-card">
+                <div 
+                  key={career.id} 
+                  className={`career-card ${selectedCardId === career.id ? 'selected' : ''}`}
+                  onClick={() => handleCardClick(career.id)}
+                >
                 <div className="card-top">
                     <div className="card-icon">
                     <span style={{color: '#F2C864', fontSize: '20px'}}>
@@ -138,7 +155,11 @@ export const ResultPage = () => {
 
         {/* Bottom Action Button */}
         <div className="bottom-action">
-          <button className="btn-generate" onClick={handleGenerateRoadmap}>
+          <button 
+            className="btn-generate" 
+            onClick={handleGenerateRoadmap}
+            disabled={!selectedCardId} 
+          >
             Generate Roadmap pembelajaran saya
             <img src={arrowright} alt="Arrow" style={{width: '20px', marginLeft: '10px'}} />
           </button>
