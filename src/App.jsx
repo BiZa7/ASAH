@@ -2,10 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { LoginPage } from './pages/LoginPage';
 import { PsikotesPage } from './pages/PsikotesPage';
 import { LandingPage } from './pages/LandingPage';
-// 1. IMPORT PAGE BARU
 import { ResultPage } from './pages/ResultPage';
 import { RoadmapLoadingPage } from './pages/RoadmapLoadingPage';
 import { RoadmapPage } from './pages/RoadmapPage';
+import { ModulPage } from './pages/ModulPage';
+import { QuizPage } from './pages/QuizPage';
 import { Header } from './components/Header';
 import { authService } from './services/authService';
 
@@ -19,8 +20,8 @@ const ProtectedRoute = ({ children }) => {
 const AppContent = () => {
   const location = useLocation();
   
-  // Header TIDAK muncul di '/login' DAN TIDAK muncul di '/'
-  const showHeader = location.pathname !== '/login' && location.pathname !== '/';
+  // Header TIDAK muncul di '/login', '/' (Landing), dan '/modul' (karena ModulPage punya header sendiri)
+  const showHeader = location.pathname !== '/login' && location.pathname !== '/' && location.pathname !== '/modul';
 
   return (
     <>
@@ -39,7 +40,6 @@ const AppContent = () => {
           } 
         />
         
-        {/* 2. TAMBAHKAN ROUTE HASIL (Protected karena butuh data user/tes) */}
         <Route 
           path="/results" 
           element={
@@ -48,7 +48,7 @@ const AppContent = () => {
             </ProtectedRoute>
           } 
         />
-        {/* 3. TAMBAHKAN ROUTE LOADING PAGE (Protected) */}
+        
         <Route 
           path="/roadmap-loading" 
           element={
@@ -57,12 +57,31 @@ const AppContent = () => {
             </ProtectedRoute>
           } 
         />
-        {/* 4. TAMBAHKAN ROUTE ROADMAP (Protected) */}
+        
         <Route 
           path="/roadmap" 
           element={
             <ProtectedRoute>
               <RoadmapPage />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* 2. TAMBAHKAN ROUTE MODUL */}
+        <Route 
+          path="/modul" 
+          element={
+            <ProtectedRoute>
+              <ModulPage />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/quiz" 
+          element={
+            <ProtectedRoute>
+              <QuizPage />
             </ProtectedRoute>
           } 
         />

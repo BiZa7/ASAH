@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 import './RoadmapPage.css'; 
 import { 
   ChartColumn, 
@@ -10,15 +11,16 @@ import {
   X,
   BookOpen,
   CheckCircle2,
-  Lock, // 1. Import Icon Lock
-  CheckLine
+  Lock,
+  Check // Saya ganti CheckLine (biasanya tidak ada di lucide standar) ke Check/CheckCircle2
 } from 'lucide-react';
 
 export const RoadmapPage = () => {
+  const navigate = useNavigate(); // 2. Inisialisasi navigate
   const [expandedModuleId, setExpandedModuleId] = useState(null);
   const [selectedSubModule, setSelectedSubModule] = useState(null);
 
-  // 2. Update Mock Data dengan properti 'status'
+  // ... (Data Mockup roadmapData TETAP SAMA, tidak perlu diubah) ...
   const roadmapData = [
     { 
       id: 1, 
@@ -30,7 +32,7 @@ export const RoadmapPage = () => {
           title: "Fundamental & Basic Excel",
           description: "Menguasai manipulasi data, formula, dan pivot tables",
           tags: ["MS. Excel Tutorial", "Excel for Data Science"],
-          status: "available", // ✅ Status Available
+          status: "available",
           details: {
             duration: "2 Jam",
             topics: ["Pengenalan Excel", "Konsep Excel", "Teknologi dasar", "Excel untuk industri"]
@@ -41,7 +43,7 @@ export const RoadmapPage = () => {
           title: "Dasar Statistika",
           description: "Belajar statistik deskriptif, probabilitas, dan distribusi.",
           tags: ["Western Statistic", "Statistic for Data Science"],
-          status: "locked", // 🔒 Status Locked
+          status: "locked",
           details: {
             duration: "3 Jam",
             topics: ["Mean, Median, Mode", "Standard Deviation"]
@@ -59,7 +61,7 @@ export const RoadmapPage = () => {
           title: "Pengenalan Database",
           description: "Memahami struktur database relasional.",
           tags: ["SQL Basics"],
-          status: "locked", // 🔒 Status Locked
+          status: "locked",
           details: {
             duration: "1.5 Jam",
             topics: ["Apa itu RDBMS", "Primary Key vs Foreign Key"]
@@ -79,10 +81,19 @@ export const RoadmapPage = () => {
   const openModal = (subModule) => setSelectedSubModule(subModule);
   const closeModal = () => setSelectedSubModule(null);
 
+  // 3. Fungsi Navigasi ke Modul Page
+  const handleStartLearning = () => {
+    // Opsional: Anda bisa mengirim ID modul jika halaman modulnya dinamis
+    // navigate(`/modul/${selectedSubModule.id}`);
+    
+    navigate('/modul'); 
+  };
+
   return (
     <div className="roadmap-page-wrapper">
       <div className="roadmap-content-container">
         
+        {/* Header */}
         <div className="roadmap-header">
           <div className="header-icon-box">
             <ChartColumn color="#0B4251" size={28} />
@@ -139,7 +150,6 @@ export const RoadmapPage = () => {
                 {isExpanded && module.subModules.length > 0 && (
                   <div className="sub-modules-container">
                     {module.subModules.map((sub, index) => {
-                      // 3. Cek Status
                       const isLocked = sub.status === 'locked';
 
                       return (
@@ -152,8 +162,6 @@ export const RoadmapPage = () => {
                           <div className="sub-module-content">
                             <div className="sub-header">
                               <h4 className="sub-title">{sub.title}</h4>
-                              
-                              {/* 4. Render Badge Berdasarkan Status */}
                               {isLocked ? (
                                 <span className="badge-gray">Locked</span>
                               ) : (
@@ -176,12 +184,11 @@ export const RoadmapPage = () => {
                             </div>
                           </div>
 
-                          {/* 5. Logic Tombol: Jika Locked ganti icon Gembok & disable klik */}
                           <button 
                             className={`btn-arrow-action ${isLocked ? 'btn-locked' : ''}`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (!isLocked) openModal(sub); // Hanya buka modal jika tidak locked
+                              if (!isLocked) openModal(sub);
                             }}
                             disabled={isLocked}
                           >
@@ -206,21 +213,15 @@ export const RoadmapPage = () => {
       {selectedSubModule && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            
-            {/* Modal Header */}
             <div className="modal-header">
               <h2 className="modal-title">{selectedSubModule.title}</h2>
-              <button className="btn-close" onClick={closeModal}>
-                <X size={24} />
-              </button>
+              <button className="btn-close" onClick={closeModal}><X size={24} /></button>
             </div>
 
-            {/* ✅ TAMBAHAN BARU: Deskripsi Sub-modul di sini */}
             <p className="modal-desc">
               {selectedSubModule.description}
             </p>
-            
-            {/* Badge Durasi */}
+
             <div className="modal-badge-row">
               <div className="duration-badge">
                 <Clock size={16} />
@@ -228,21 +229,21 @@ export const RoadmapPage = () => {
               </div>
             </div>
 
-            {/* Learning List */}
             <div className="modal-learning-section">
               <h3>Yang akan kamu pelajari</h3>
               <ul className="learning-list">
                 {selectedSubModule.details.topics.map((topic, idx) => (
                   <li key={idx}>
-                    <CheckLine size={18} color="#F2C864" />
+                    {/* Menggunakan CheckCircle2 atau Check */}
+                    <CheckCircle2 size={18} color="#22C55E" />
                     <span>{topic}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Footer Button */}
-            <button className="btn-start-learning">
+            {/* 4. Update Button dengan onClick Handler */}
+            <button className="btn-start-learning" onClick={handleStartLearning}>
               Mulai Belajar <ArrowRight size={18} />
             </button>
 

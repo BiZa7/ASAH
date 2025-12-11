@@ -1,0 +1,463 @@
+/* --- GLOBAL LAYOUT --- */
+.modul-page-wrapper {
+  position: fixed; /* KUNCI 1: Paksa elemen menempel di layar */
+  top: 0;
+  left: 0;
+  width: 100vw;    /* Lebar penuh layar */
+  height: 100vh;   /* Tinggi penuh layar */
+  overflow: hidden; /* KUNCI 2: Hilangkan scrollbar window/body */
+  
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #FAFAFA; /* Background Putih Abu Sangat Terang */
+  font-family: 'Inter', sans-serif;
+  overflow: hidden; /* Mencegah scroll double */
+}
+
+/* --- HEADER --- */
+.modul-header {
+  height: 70px;
+  background-color: white;
+  border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.header-logo {
+  height: 32px;
+}
+
+.path-progress-badge {
+  background-color: #FEF3C7; /* Kuning Muda */
+  color: #0B4251;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* --- MAIN LAYOUT GRID --- */
+.modul-layout {
+  display: flex;
+  flex: 1; /* Mengambil sisa tinggi setelah header */
+  height: calc(100vh - 70px); /* KUNCI 3: Paksa tinggi layout = Layar - Header */
+  overflow: hidden; /* Mencegah layout ini meluber */
+}
+
+/* --- LEFT SIDEBAR --- */
+.sidebar-left {
+  width: 300px;
+  background-color: #F9FAFB;
+  border-right: 1px solid #E5E7EB;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.sidebar-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.sidebar-header p {
+  font-size: 12px;
+  color: #6B7280;
+  margin: 0 0 20px 0;
+}
+
+.module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* Module Item Styles */
+.module-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  gap: 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.module-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.module-item-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* State: Completed */
+.module-item.completed {
+  background-color: #DCFCE7; /* Hijau Muda */
+  color: #166534;
+}
+
+/* State: Active */
+.module-item.active {
+  background-color: #FDE68A; /* Kuning Emas */
+  color: #0B4251;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.module-item.current-view {
+  border: 1px solid #0B4251; /* Border biru untuk menandakan sedang dibaca */
+  background-color: #F0F9FF;
+}
+
+.icon-number {
+  width: 30px;
+  height: 30px;
+  background-color: #0B4251;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.icon-completed {
+  width: 30px;
+  height: 30px;
+  background-color: #22C55E;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+/* State: Locked */
+.module-item.locked {
+  background-color: #E5E7EB; /* Abu-abu */
+  color: #6B7280;
+  cursor: not-allowed;
+}
+
+/* Quiz Section */
+.quiz-section {
+  margin-top: auto;
+  border-top: 1px solid #E5E7EB;
+  padding-top: 20px;
+}
+
+.module-item.quiz-item.locked {
+  background-color: #9CA3AF;
+  color: white;
+  cursor: not-allowed;
+}
+
+.module-item.quiz-item.active {
+  background-color: #0B4251; /* Biru Tua */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.module-item.quiz-item.active:hover {
+  background-color: #08333e;
+}
+
+
+
+.quiz-item {
+  display: flex;
+  align-items: center;
+  background-color: #9CA3AF; /* Abu Gelap untuk Quiz Lock */
+  color: white;
+}
+
+.quiz-text-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.quiz-subtitle {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.icon-quiz{
+  width: 30px;
+  height: 30px;
+  background-color: #D1D5DB;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+.icon-quiz-active{
+  width: 30px;
+  height: 30px;
+  background-color: #F2C864;
+  color: black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+/* --- CENTER MAIN CONTENT --- */
+.main-content {
+  flex: 1;
+  padding: 40px 60px;
+  overflow-y: auto; /* ✅ Ini kunci agar area tengah bisa di-scroll */
+  background-color: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.breadcrumbs {
+  font-size: 12px;
+  color: #6B7280;
+  margin-bottom: 20px;
+}
+
+.content-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 30px;
+  margin-bottom: 12px;
+}
+
+.content-paragraph {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+/* Pro Tip Box */
+.pro-tip-box {
+  background-color: #FFF7ED; /* Orange Muda */
+  border-left: 4px solid #F2C864;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.tip-content h4 {
+  margin: 0 0 4px 0;
+  color: #92400E;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.tip-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #92400E;
+  line-height: 1.5;
+}
+
+/* Learning Goals List */
+.learning-goals {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.learning-goals li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  color: #374151;
+}
+
+.check-icon {
+  color: #F2C864;
+  margin-top: 2px;
+}
+
+/* --- RIGHT SIDEBAR (Assistant) --- */
+.sidebar-right {
+  width: 550px;
+  background-color: #F9FAFB;
+  border-left: 1px solid #E5E7EB;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.assistant-header {
+  padding: 20px;
+  border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: white;
+}
+
+.assistant-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #F2C864;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assistant-info h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.assistant-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #6B7280;
+}
+
+.chat-area {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty-state {
+  margin-top: auto;
+  text-align: center;
+  color: #9CA3AF;
+  font-size: 14px;
+}
+
+.chat-input-wrapper {
+  padding: 20px;
+  background-color: white;
+  border-top: 1px solid #E5E7EB;
+}
+
+.chat-input-container {
+  display: flex;
+  align-items: center;
+  background-color: #F3F4F6;
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.chat-input-container input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: #374151;
+}
+
+.btn-send {
+  background: #D1D5DB;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #4B5563;
+  transition: background 0.2s;
+}
+
+.btn-send:hover {
+  background: #9CA3AF;
+  color: white;
+}
+
+.ai-disclaimer {
+  font-size: 10px;
+  color: #9CA3AF;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.action-footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: flex-end; /* Tombol di kanan */
+}
+
+.btn-next-step {
+  background-color: #F2C864; /* Kuning Emas */
+  color: #0B4251; /* Teks Biru Gelap */
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(242, 200, 100, 0.2);
+}
+
+.btn-next-step:hover {
+  background-color: #D9AD38;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(242, 200, 100, 0.3);
+}
+
+
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .sidebar-right {
+    .sidebar-right { display: none; } /* Sembunyikan assistant di layar kecil */
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-left { display: none; }
+  .main-content { padding: 20px; }
+  
+  /* Di HP tombol full width */
+  .btn-next-step {
+    width: 100%;
+    justify-content: center;
+  }
+}
