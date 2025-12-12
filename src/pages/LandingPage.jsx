@@ -51,7 +51,7 @@ export const LandingPage = () => {
         </p>
 
         <div className="cta-buttons">
-          <button className="btn-primary" onClick={handleStartAssessment}>
+          <button className="landing-btn-primary" onClick={handleStartAssessment}>
             Start Free Assessment
           </button>
           <button className="btn-secondary">

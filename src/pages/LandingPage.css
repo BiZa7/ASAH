@@ -105,11 +105,11 @@
   margin-bottom: 60px;
 }
 
-.btn-primary {
+.landing-btn-primary{
   background-color: #F2C864;
   color: #0B4251;
   padding: 15px 35px;
-  border-radius: 30px;
+  border-radius: 50px;
   border: none;
   font-family: "Inter", Arial, Helvetica, sans-serif;
   font-size: 16px;
@@ -119,7 +119,7 @@
   transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
+.landing-btn-primary:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(242, 200, 100, 0.6);
 }

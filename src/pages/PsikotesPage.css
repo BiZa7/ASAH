@@ -9,6 +9,26 @@
   flex-direction: column;
   align-items: center;
 }
+
+.psikotes-card-wrapper {
+  background-color: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 2000px; /* Sesuaikan lebar maksimal kartu */
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Jarak antara Konten Soal dan Tombol */
+}
+
+.psikotes-card-wrapper .question-card {
+  box-shadow: none;
+  background-color: transparent;
+  padding: 0;
+  border: none;
+}
+
 .psikotes-header {
   width: 100%;
   max-width: 3000px;
@@ -64,6 +84,14 @@
   position: relative;
 }
 
+.question-number-title {
+  font-size: 30px;
+  font-weight: 600;
+  color: #0B4251;
+  margin-top: 0px;
+  margin-bottom: 15px;
+}
+
 .question-type-badge {
   display: inline-block;
   margin-top: 10px; /* ✅ Dikurangi */
@@ -79,7 +107,8 @@
 .question-text {
   font-size: 22px; /* ✅ Dikurangi */
   color: #0B4251;
-  margin-bottom: 20px; /* ✅ Dikurangi */
+  margin-top: 0px;
+  margin-bottom: 30px; /* ✅ Dikurangi */
   line-height: 1.4;
   padding-right: 0px; /* ✅ Dihapus */
 }
@@ -94,9 +123,12 @@
   width: 100%;
   padding: 20px;
   background-color: #f5f5f5;
+  color: #000000;
   border: 2px solid transparent;
   border-radius: 10px;
   font-size: 16px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
@@ -178,10 +210,11 @@
 
 .navigation-buttons {
   display: flex;
-  justify-content: space-between; /* ✅ Kunci: Memisahkan tombol ke ujung kiri & kanan */
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  margin-top: 20px; /* Beri jarak sedikit dari opsi jawaban */
+  margin-top: 0; /* Reset margin karena sudah dihandle gap wrapper */
+  padding-top: 20px;
+  border-top: 1px solid #F3F4F6; /* Garis pemisah tipis */
 }
 
 .nav-button, .submit-button {
@@ -197,6 +230,7 @@
   border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
+  font-family: "Inter", sans-serif;
   cursor: pointer;
   transition: all 0.3s ease;
 

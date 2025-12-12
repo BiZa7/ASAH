@@ -1,0 +1,292 @@
+.quiz-page-wrapper {
+  min-height: 100vh;
+  background-color: #FAFAFA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Header saat Quiz Berjalan */
+.quiz-header-simple {
+  width: 100%;
+  max-width: 1000px;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.question-counter-badge {
+  background-color: #FFF7ED;
+  color: #B45309;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.quiz-content-container {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.quiz-card-wrapper {
+  width: 100%;
+  background-color: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 30px; 
+}
+
+.quiz-card-wrapper .question-card {
+  box-shadow: none;
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  margin-bottom: 0;
+}
+
+.quiz-progress-section {
+  width: 100%;
+  margin-bottom: 0px; /* Jarak ke pertanyaan */
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px; /* Sedikit lebih tebal agar jelas */
+  background-color: #E5E7EB; /* Abu-abu track */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #F2C864; /* Kuning Emas ASAH */
+  border-radius: 10px;
+  transition: width 0.3s ease-in-out; /* Animasi halus saat progress bertambah */
+}
+
+.quiz-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0; 
+  padding-top: 20px;
+  border-top: 1px solid #F3F4F6;
+}
+
+.nav-btn {
+  /* Flexbox untuk icon & teks */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  /* Ukuran & Spacing (Disamakan dengan PsikotesPage) */
+  flex: none; /* Jangan melar */
+  width: auto;
+  min-width: 150px; /* Lebar minimum agar tombol terlihat kokoh */
+  padding: 15px 30px; /* Padding lebih besar */
+  
+  border-radius: 10px;
+  background-color: #ffffff; 
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.nav-btn.prev {
+  color: #0B4251;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background-color: #F2C864; /* Hover Kuning */
+  border-color: #F2C864;
+  transform: translateY(-2px);
+}
+
+.nav-btn.prev:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+.nav-btn.next, 
+.nav-btn.finish {
+  color: #0B4251; 
+}
+
+
+.nav-btn.next:hover, 
+.nav-btn.finish:hover {
+  background-color: #D9AD38; /* Efek hover lebih gelap sedikit */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(242, 200, 100, 0.4);
+}
+
+.nav-btn.finish:disabled {
+  background-color: #9CA3AF;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- OUTCOME CARD STYLES --- */
+.outcome-card {
+  background-color: white;
+  padding: 60px;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 700px;
+  width: 100%;
+  margin-top: 40px;
+  
+}
+
+/* Bagian Gambar Atas (Centang/Seru) */
+.outcome-icon {
+  margin-bottom: 20px;
+  /* Jika gambar sudah ada background lingkarannya, ini cukup */
+}
+
+.outcome-img-asset {
+  width: 120px; /* Sesuaikan ukuran gambar asli */
+  height: auto;
+}
+
+.outcome-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.outcome-subtitle {
+  font-size: 16px;
+  color: #4B5563;
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+/* Kotak Skor Besar (Abu-abu) */
+.score-box {
+  background-color: #E9ECEF; /* Warna abu-abu sesuai desain 9ebb9a */
+  width: 100%;
+  padding: 30px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.score-number {
+  font-size: 48px;
+  font-weight: 700;
+  color: #0B4251;
+  margin-bottom: 5px;
+}
+
+.score-label {
+  font-size: 16px;
+  color: #4B5563;
+}
+
+/* Grid Statistik (Benar, Salah, Terjawab) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.stat-item.green {
+  background-color: #DCFCE7; /* Hijau muda */
+  color: #166534;
+}
+
+.stat-item.red {
+  background-color: #FEE2E2; /* Merah muda */
+  color: #991B1B;
+}
+
+.stat-item.grey {
+  background-color: #F3F4F6; /* Abu muda */
+  color: #374151;
+}
+
+.stat-val {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stat-lbl {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Action Buttons (Ulang Kuis & Lanjut) */
+.outcome-actions {
+  display: flex;
+  gap: 20px;
+}
+
+.btn-outline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 2px solid #111827;
+  background-color: white;
+  color: #111827;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background-color: #F9FAFB;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #F2C864; /* Kuning Emas */
+  color: #0B4251;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(242, 200, 100, 0.25);
+}
+
+.btn-primary:hover {
+  background-color: #D9AD38;
+  transform: translateY(-2px);
+}
