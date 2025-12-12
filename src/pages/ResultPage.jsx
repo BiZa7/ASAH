@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './ResultPage.css';
 // Import service
 import { optionCareer } from '../services/roadmapService'; 
+import api from '../utils/api';
 
 // Assets
 import trophy from "../assets/trophy.svg";
@@ -16,40 +17,29 @@ export const ResultPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCardId, setSelectedCardId] = useState(null);
+  
+  // 1. STATE BARU: Untuk loading tombol generate
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
         setIsLoading(true);
-        
-        // 1. PERBAIKAN: Gunakan method GET (getOptionsCareer), bukan POST
         const response = await optionCareer.getOptionsCareer();
 
-        console.log("Full Response (GET):", response); 
-
-        // 2. Cek response success
         if (response.success) {
-          
           const rawData = response.data || [];
-
-          // 4. Mapping Data
           const mappedData = rawData.map((item, index) => ({
-            // Gunakan optional chaining (?.)
             id: item.id_career || index, 
             title: item.name || "Nama Karir Tidak Tersedia", 
             description: item.description || "Deskripsi belum tersedia",
-            
-            // Konversi similarity ke persentase
             percentage: item.similarity ? Math.round(Number(item.similarity) * 100) : 0, 
-            
-            // Default skills (karena endpoint GET backend belum return skills array)
             skills: item.skills || ["Analytical", "Problem Solving", "Critical Thinking"] 
           }));
 
           setCareerMatches(mappedData);
         } else {
-            // Tampilkan pesan error dari backend jika success: false
-            setError(response.message || "Gagal mendapatkan data rekomendasi.");
+           setError(response.message || "Gagal mendapatkan data rekomendasi.");
         }
 
       } catch (err) {
@@ -65,7 +55,6 @@ export const ResultPage = () => {
 
 
   const handleCardClick = (id) => {
-    // Jika diklik lagi, batalkan pilihan (toggle), atau langsung set ID baru
     if (selectedCardId === id) {
       setSelectedCardId(null);
     } else {
@@ -73,13 +62,53 @@ export const ResultPage = () => {
     }
   };
 
-  const handleGenerateRoadmap = () => {
-    if (selectedCardId) {
-      navigate('/roadmap-loading', { state: { selectedCareerId: selectedCardId } });
+  // 2. UPDATE FUNGSI GENERATE
+  const handleGenerateRoadmap = async () => {
+    if (!selectedCardId) return;
+    console.log(`selectedCardId: ${selectedCardId}`);
+    
+
+    try {
+      setIsGenerating(true);
+
+      // --- PERUBAHAN DISINI ---
+      // Kita memanggil endpoint yang menjalankan KEDUANYA sekaligus
+      
+      // 1. Ambil Token
+      let token = localStorage.getItem("accessToken");
+      if (token && token.startsWith('"')) token = token.slice(1, -1);
+
+      // 2. Request ke Backend
+      // Asumsi endpoint backend: POST /roadmap/generate-full
+      const response = await api.post(
+        "/ai/roadmap", 
+        { id_career: selectedCardId }, // Body
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("Full Generation Success:", response);
+
+      await optionCareer.generateFullRoadmap(selectedCardId);
+
+      // 3. Navigasi setelah SELESAI semua (Struktur + Materi)
+      navigate('/roadmap-loading', { 
+          state: { 
+              selectedCareerId: selectedCardId,
+              message: "Struktur berhasil dibuat! AI sedang menulis materi detail untukmu..." 
+          } 
+      });
+
+    } catch (err) {
+      console.error("Gagal generate roadmap:", err);
+      alert("Terjadi kesalahan atau waktu habis. Silakan cek halaman roadmap Anda.");
+      // Opsional: Tetap navigate karena mungkin backend masih memproses di background
+      // navigate('/roadmap-loading'); 
+    } finally {
+      setIsGenerating(false);
     }
   };
 
-  // Tampilan saat Loading
+  // Tampilan saat Loading Data Awal
   if (isLoading) {
     return (
         <div className="result-page" style={{display:'flex', justifyContent:'center', alignItems:'center', height: '100vh'}}>
@@ -158,10 +187,21 @@ export const ResultPage = () => {
           <button 
             className="btn-generate" 
             onClick={handleGenerateRoadmap}
-            disabled={!selectedCardId} 
+            // 3. UPDATE: Disable tombol jika belum pilih ATAU sedang loading
+            disabled={!selectedCardId || isGenerating} 
+            style={{ opacity: (!selectedCardId || isGenerating) ? 0.6 : 1, cursor: (!selectedCardId || isGenerating) ? 'not-allowed' : 'pointer' }}
           >
-            Generate Roadmap pembelajaran saya
-            <img src={arrowright} alt="Arrow" style={{width: '20px', marginLeft: '10px'}} />
+            {isGenerating ? (
+                <>
+                  Memproses Pilihan...
+                  <div className="spinner-small" style={{marginLeft: '10px', width:'16px', height:'16px', border:'2px solid #fff', borderTopColor:'transparent', borderRadius:'50%', animation:'spin 1s linear infinite'}}></div>
+                </>
+            ) : (
+                <>
+                  Generate Roadmap pembelajaran saya
+                  <img src={arrowright} alt="Arrow" style={{width: '20px', marginLeft: '10px'}} />
+                </>
+            )}
           </button>
         </div>
 

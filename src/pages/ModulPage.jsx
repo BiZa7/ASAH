@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import { useNavigate, useLocation } from 'react-router-dom'; // 1. Import useLocation
+import ReactMarkdown from 'react-markdown'; // 2. (Opsional) Untuk render Markdown
 import { Chatbot } from '../components/Chatbot';
 import './ModulPage.css';
 import { 
@@ -7,7 +8,6 @@ import {
   Lock, 
   Lightbulb, 
   Bot, 
-  SendHorizontal,
   ArrowRight,
   Check,
   Newspaper
@@ -15,52 +15,41 @@ import {
 import ASAH from "../assets/ASAH.svg"; 
 
 export const ModulPage = () => {
-  const navigate = useNavigate(); // Inisialisasi navigasi
+  const navigate = useNavigate();
+  const location = useLocation(); // Ambil state dari navigasi
 
-  // Data Modul (Hanya 5 part materi, TIDAK ADA ID 99)
+  // 3. Ambil data dari RoadmapPage
+  // Fallback data dummy jika user akses langsung via URL tanpa klik dari roadmap
+  const { title = "Materi Belum Dipilih", content = "Silakan kembali ke roadmap dan pilih materi." } = location.state || {};
+
+  // --- STATE ---
+  // Kita simpan materi ini sebagai "Part 1" karena user memilih spesifik 1 materi
+  // Jika ingin fitur "Next Module" jalan, Anda perlu mengirim Array materi dari RoadmapPage, bukan cuma 1.
+  // Untuk saat ini, kita anggap user belajar 1 materi spesifik dulu.
+  
   const [modules, setModules] = useState([
-    { id: 1, title: "Pengenalan Excel", status: "active" },
-    { id: 2, title: "Konsep Excel", status: "active" },
-    { id: 3, title: "Teknologi dasar", status: "active" }, 
-    { id: 4, title: "Excel untuk Industri", status: "locked" },
-    { id: 5, title: "Tools pendukung", status: "locked" },
+    { id: 1, title: "Materi Utama", status: "active" },
+    { id: 2, title: "Rangkuman", status: "locked" }, // Simulasi part 2
+    { id: 3, title: "Kuis Latihan", status: "locked" },
   ]);
 
   const [activeId, setActiveId] = useState(1);
 
-  // 2. Logic cek apakah Kuis sudah boleh terbuka
-  // Kuis terbuka jika modul TERAKHIR (index 4 / ID 5) sudah 'completed'
+  // Logic Quiz Unlocked
   const isQuizUnlocked = modules[modules.length - 1].status === 'completed';
-
-  // 3. Logic jika user sedang melihat halaman Intro Kuis (activeId kita set string 'quiz')
   const isQuizView = activeId === 'quiz';
 
+  // Scroll top saat ganti materi
   useEffect(() => {
     const contentArea = document.querySelector('.main-content');
     if (contentArea) contentArea.scrollTop = 0;
   }, [activeId]);
 
-  // --- KONTEN MATERI ---
-  const contentMap = {
-    1: { title: "Pengenalan Excel", content: <p>Materi Pengenalan...</p> },
-    2: { title: "Konsep Excel", content: <p>Materi Konsep...</p> },
-    3: {
-      title: "Konsep Utama",
-      breadcrumbs: "Part 3 > Teknologi dasar",
-      intro: "Selamat datang di modul pembelajaran komprehensif ini...",
-      keyConcepts: "Topik ini membahas prinsip-prinsip penting...",
-      goals: ["Memahami prinsip.", "Mempelajari terminologi.", "Mengembangkan skill.", "Bangun kepercayaan diri."],
-      details: "Mari kita telusuri lebih dalam pokok bahasan ini..."
-    },
-    4: { title: "Excel untuk Industri", content: <p>Materi Industri...</p> },
-    5: { title: "Tools Pendukung", content: <p>Materi Tools...</p> }
-  };
 
-  // 4. Update Handle Next
+  // 4. LOGIC NEXT STEP
   const handleNext = () => {
     const currentIndex = modules.findIndex(m => m.id === activeId);
     
-    // Jika masih ada materi selanjutnya (Part 1 s.d 4)
     if (currentIndex < modules.length - 1) {
       const nextId = modules[currentIndex + 1].id;
       const updatedModules = modules.map(m => {
@@ -71,100 +60,86 @@ export const ModulPage = () => {
       setModules(updatedModules);
       setActiveId(nextId);
     } 
-    // Jika ini adalah materi TERAKHIR (Part 5)
     else if (currentIndex === modules.length - 1) {
       const updatedModules = modules.map(m => {
         if (m.id === activeId) return { ...m, status: 'completed' };
         return m;
       });
       setModules(updatedModules);
-      
-      
       setActiveId('quiz');
     }
   };
 
-  // Handle Klik Sidebar Materi
   const handleSidebarClick = (id, status) => {
-    if (status !== 'locked') {
-      setActiveId(id);
-    }
+    if (status !== 'locked') setActiveId(id);
   };
 
-  // 5. Handle Klik Sidebar Kuis (Manual)
   const handleQuizSidebarClick = () => {
-    if (isQuizUnlocked) {
-      navigate('/quiz');
-    }
+    if (isQuizUnlocked) navigate('/quiz');
   };
 
-  // 6. Handle Tombol "Mulai Kuis" (Navigasi Pindah Page)
-  const handleStartQuiz = () => {
-    // Arahkan ke route kuis yang sebenarnya
-    // Pastikan route ini sudah dibuat di App.js
-    navigate('/quiz'); 
-  };
+  const handleStartQuiz = () => navigate('/quiz');
 
-  // Render Konten
+  // --- RENDER CONTENT (DINAMIS) ---
   const renderContent = () => {
-    // A. Tampilan Intro Kuis (Jika activeId === 'quiz')
     if (isQuizView) {
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-          <h1 className="content-title" style={{textAlign: 'center'}}>Kuis Modul Excel</h1>
-          <p className="content-paragraph" style={{textAlign: 'center', maxWidth: '600px'}}>
-            Selamat! Anda telah menyelesaikan semua materi. Sekarang saatnya menguji pemahaman Anda melalui kuis singkat.
+        <div className="quiz-intro-view">
+          <h1 className="content-title">Selesai!</h1>
+          <p className="content-paragraph">
+            Anda telah menyelesaikan materi <strong>"{title}"</strong>.
           </p>
-          <div style={{ marginTop: '30px' }}>
-            <button className="btn-next-step" onClick={handleStartQuiz}>
-              Mulai Mengerjakan Kuis <ArrowRight size={20} />
-            </button>
-          </div>
+          <button className="btn-next-step" onClick={handleStartQuiz}>
+            Mulai Kuis Pendek <ArrowRight size={20} />
+          </button>
         </div>
       );
     }
 
-    // B. Tampilan Materi Biasa (Part 3 yang lengkap)
-    if (activeId === 3) {
-      const data = contentMap[3];
+    // Tampilan Materi
+    // Kita gunakan activeId untuk simulasi tabs (Materi -> Rangkuman)
+    // Tapi karena konten dari API cuma 1 string panjang, kita tampilkan di Part 1 semua.
+    
+    if (activeId === 1) {
       return (
-        <>
-          <div className="breadcrumbs">{data.breadcrumbs}</div>
-          <h1 className="content-title">{data.title}</h1>
-          <p className="content-paragraph">{data.intro}</p>
-          <h2 className="section-title">Key Concepts</h2>
-          <p className="content-paragraph">{data.keyConcepts}</p>
+        <div className="content-container">
+          <div className="breadcrumbs">Modul Pembelajaran &gt; {title}</div>
+          <h1 className="content-title">{title}</h1>
+          
+          {/* Tampilkan Materi dari AI */}
+          <div className="markdown-content">
+            {/* Jika pakai react-markdown */}
+            <ReactMarkdown>{content}</ReactMarkdown>
+            
+            {/* Jika tidak pakai react-markdown (Fallback text biasa dengan newlines) */}
+            {/* <p style={{whiteSpace: 'pre-wrap', lineHeight: '1.8'}}>
+                {content}
+              </p> 
+            */}
+          </div>
+
           <div className="pro-tip-box">
             <div className="tip-icon"><Lightbulb size={24} color="#D97706" /></div>
             <div className="tip-content">
-              <h4>Pro Tip</h4>
-              <p>Luangkan waktu Anda untuk memahami setiap konsep secara menyeluruh.</p>
+              <h4>ASAH Tip</h4>
+              <p>Jika ada istilah yang membingungkan, tanyakan langsung pada Assistant di sebelah kanan!</p>
             </div>
           </div>
-          <h2 className="section-title">Tujuan Pembelajaran</h2>
-          <ul className="learning-goals">
-            {data.goals.map((g, i) => (
-              <li key={i}><div className="check-icon"><CheckCircle2 size={18} /></div><span>{g}</span></li>
-            ))}
-          </ul>
-          <h2 className="section-title">Penjelasan Lebih Lanjut</h2>
-          <p className="content-paragraph">{data.details}</p>
-          <br /><br />
-        </>
-      );
-    } 
-    // C. Tampilan Materi Lainnya (Part 1, 2, 4, 5)
-    else {
-      return (
-        <>
-          <div className="breadcrumbs">Part {activeId} &gt; {contentMap[activeId]?.title}</div>
-          <h1 className="content-title">{contentMap[activeId]?.title}</h1>
-          <div className="content-paragraph" style={{minHeight: '300px'}}>
-            {contentMap[activeId]?.content || "Konten sedang dimuat..."}
-          </div>
-        </>
+        </div>
       );
     }
+    
+    // Placeholder untuk part 2 & 3 (Karena API baru kirim 1 materi utuh)
+    if (activeId === 2) {
+      return (
+        <div>
+          <h1>Rangkuman</h1>
+          <p>Fitur rangkuman otomatis akan segera hadir.</p>
+        </div>
+      );
+    }
+
+    return <div>Konten belum tersedia.</div>;
   };
 
   return (
@@ -175,18 +150,17 @@ export const ModulPage = () => {
         </div>
         <div className="header-right">
           <div className="path-progress-badge">
-            {modules.filter(m => m.status === 'completed').length}/{modules.length} Path Selesai
+            {modules.filter(m => m.status === 'completed').length}/{modules.length} Bagian Selesai
           </div>
         </div>
       </header>
 
       <div className="modul-layout">
+        {/* Sidebar Kiri */}
         <aside className="sidebar-left">
           <div className="sidebar-header">
-            <h3>Konten Modul</h3>
-            <p>Selesaikan semua part untuk membuka kuis</p>
+            <h3>Daftar Isi</h3>
           </div>
-          
           <div className="module-list">
             {modules.map((part) => (
               <div 
@@ -195,64 +169,41 @@ export const ModulPage = () => {
                 onClick={() => handleSidebarClick(part.id, part.status)}
               >
                 <div className="module-item-icon">
-                  {part.status === 'completed' && <Check size={20} className='icon-completed'/>}
-                  {part.status === 'active' && <span className="icon-number">{part.id}</span>}
-                  {part.status === 'locked' && <Lock size={18} />}
+                  {part.status === 'completed' ? <Check size={20} className='icon-completed'/> : 
+                   part.status === 'locked' ? <Lock size={18} /> : 
+                   <span className="icon-number">{part.id}</span>}
                 </div>
                 <span className="module-item-text">{part.title}</span>
               </div>
             ))}
           </div>
-
-          {/* 7. UPDATE: Modul Kuis di Kiri Bawah menjadi Dinamis */}
-          <div className={`quiz-section ${isQuizUnlocked ? 'active' : 'locked'}`}>
-            <div 
-              className={`module-item quiz-item ${isQuizUnlocked ? 'active' : 'locked'} ${isQuizView ? 'current-view' : ''}`}
-              onClick={handleQuizSidebarClick} // Pasang event click disini
-            >
-              <div className="module-item-icon">
-                {/* Ganti Icon Gembok jadi File jika unlocked */}
-                {isQuizUnlocked ? <Newspaper size={18} className='icon-quiz-active' /> : <Newspaper size={18} className='icon-quiz'/>}
-              </div>
-              <div className="quiz-text-wrapper">
-                <span className="module-item-text">Modul Kuis</span>
-                <span className="quiz-subtitle">
-                  {isQuizUnlocked ? 'Siap dikerjakan' : 'Selesaikan semua path terlebih dahulu'}
-                </span>
-              </div>
-            </div>
-          </div>
         </aside>
 
+        {/* Main Content */}
         <main className="main-content">
           {renderContent()}
           
-          {/* Tombol Lanjut (Hanya muncul jika bukan di view Intro Kuis) */}
           {!isQuizView && (
             <div className="action-footer">
-                <button className="btn-next-step" onClick={handleNext}>
-                  {/* Text Tombol berubah di modul terakhir */}
-                  {activeId === 5 ? "Selesai & Buka Kuis" : "Selesai & Lanjut"} 
-                  <ArrowRight size={20} />
-                </button>
+              <button className="btn-next-step" onClick={handleNext}>
+                {activeId === modules.length ? "Selesai" : "Lanjut"} <ArrowRight size={20} />
+              </button>
             </div>
           )}
         </main>
 
+        {/* Sidebar Kanan (Chatbot) */}
         <aside className="sidebar-right">
           <div className="assistant-header">
-            <div className="assistant-avatar">
-              <Bot size={24} color="#0B4251" />
-            </div>
+            <div className="assistant-avatar"><Bot size={24} color="#0B4251" /></div>
             <div className="assistant-info">
               <h4>ASAH Assistant</h4>
-              <p>Asisten belajar kamu</p>
+              <p>Tanya tentang materi ini</p>
             </div>
           </div>
-
-          {/* CHATBOT COMPONENT DIPASANG DI SINI */}
           <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-             <Chatbot />
+             {/* Kirim context materi ke Chatbot agar dia pintar menjawab */}
+             <Chatbot initialContext={`User sedang membaca materi tentang: ${title}. Isi materi: ${content.substring(0, 500)}...`} />
           </div>
         </aside>
       </div>
