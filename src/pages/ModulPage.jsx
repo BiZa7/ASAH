@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // 1. Import useLocation
-import ReactMarkdown from 'react-markdown'; // 2. (Opsional) Untuk render Markdown
+import { useNavigate, useLocation } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { Chatbot } from '../components/Chatbot';
 import './ModulPage.css';
 import { 
@@ -10,46 +10,45 @@ import {
   Bot, 
   ArrowRight,
   Check,
-  Newspaper
+  Newspaper, // Pastikan import ini ada
+  FileText
 } from 'lucide-react';
 import ASAH from "../assets/ASAH.svg"; 
 
 export const ModulPage = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Ambil state dari navigasi
+  const location = useLocation();
 
-  // 3. Ambil data dari RoadmapPage
-  // Fallback data dummy jika user akses langsung via URL tanpa klik dari roadmap
+  // Ambil data dari RoadmapPage (Title & Content Materi)
   const { title = "Materi Belum Dipilih", content = "Silakan kembali ke roadmap dan pilih materi." } = location.state || {};
 
   // --- STATE ---
-  // Kita simpan materi ini sebagai "Part 1" karena user memilih spesifik 1 materi
-  // Jika ingin fitur "Next Module" jalan, Anda perlu mengirim Array materi dari RoadmapPage, bukan cuma 1.
-  // Untuk saat ini, kita anggap user belajar 1 materi spesifik dulu.
-  
   const [modules, setModules] = useState([
     { id: 1, title: "Materi Utama", status: "active" },
-    { id: 2, title: "Rangkuman", status: "locked" }, // Simulasi part 2
-    { id: 3, title: "Kuis Latihan", status: "locked" },
+    { id: 2, title: "Rangkuman", status: "locked" },
+    { id: 3, title: "Kuis Latihan", status: "locked" }
   ]);
 
   const [activeId, setActiveId] = useState(1);
 
-  // Logic Quiz Unlocked
+  // 1. LOGIC QUIZ UNLOCKED
+  // Kuis di sidebar kiri bawah terbuka jika modul terakhir (ID 3) sudah 'completed'
   const isQuizUnlocked = modules[modules.length - 1].status === 'completed';
+  
+  // Logic View Intro Kuis (di layar tengah)
   const isQuizView = activeId === 'quiz';
 
-  // Scroll top saat ganti materi
   useEffect(() => {
     const contentArea = document.querySelector('.main-content');
     if (contentArea) contentArea.scrollTop = 0;
   }, [activeId]);
 
 
-  // 4. LOGIC NEXT STEP
+  // --- LOGIC NEXT STEP ---
   const handleNext = () => {
     const currentIndex = modules.findIndex(m => m.id === activeId);
     
+    // Jika belum modul terakhir
     if (currentIndex < modules.length - 1) {
       const nextId = modules[currentIndex + 1].id;
       const updatedModules = modules.map(m => {
@@ -60,12 +59,15 @@ export const ModulPage = () => {
       setModules(updatedModules);
       setActiveId(nextId);
     } 
+    // Jika modul terakhir selesai -> Buka Kuis
     else if (currentIndex === modules.length - 1) {
       const updatedModules = modules.map(m => {
         if (m.id === activeId) return { ...m, status: 'completed' };
         return m;
       });
       setModules(updatedModules);
+      
+      // Pindah ke Intro Kuis (Tampilan Tengah)
       setActiveId('quiz');
     }
   };
@@ -74,48 +76,49 @@ export const ModulPage = () => {
     if (status !== 'locked') setActiveId(id);
   };
 
+  // 2. HANDLER TOMBOL SIDEBAR KUIS
   const handleQuizSidebarClick = () => {
-    if (isQuizUnlocked) navigate('/quiz');
+    if (isQuizUnlocked) {
+      // Opsi A: Langsung navigasi ke /quiz
+      navigate('/quiz');
+      
+      // Opsi B: Atau tampilkan Intro di tengah dulu (pilih salah satu)
+      // setActiveId('quiz'); 
+    } else {
+      alert("Selesaikan semua materi terlebih dahulu!");
+    }
   };
 
   const handleStartQuiz = () => navigate('/quiz');
 
-  // --- RENDER CONTENT (DINAMIS) ---
+  // --- RENDER CONTENT ---
   const renderContent = () => {
+    // Tampilan Intro Kuis (Saat tombol selesai diklik)
     if (isQuizView) {
       return (
-        <div className="quiz-intro-view">
+        <div className="quiz-intro-view" style={{textAlign:'center', marginTop:'50px'}}>
           <h1 className="content-title">Selesai!</h1>
           <p className="content-paragraph">
             Anda telah menyelesaikan materi <strong>"{title}"</strong>.
           </p>
-          <button className="btn-next-step" onClick={handleStartQuiz}>
-            Mulai Kuis Pendek <ArrowRight size={20} />
-          </button>
+          <div style={{marginTop: '30px'}}>
+            <button className="btn-next-step" onClick={handleStartQuiz} style={{margin:'0 auto'}}>
+              Mulai Kuis  <ArrowRight size={20} />
+            </button>
+          </div>
         </div>
       );
     }
 
-    // Tampilan Materi
-    // Kita gunakan activeId untuk simulasi tabs (Materi -> Rangkuman)
-    // Tapi karena konten dari API cuma 1 string panjang, kita tampilkan di Part 1 semua.
-    
+    // Tampilan Materi Utama (Part 1)
     if (activeId === 1) {
       return (
         <div className="content-container">
           <div className="breadcrumbs">Modul Pembelajaran &gt; {title}</div>
           <h1 className="content-title">{title}</h1>
           
-          {/* Tampilkan Materi dari AI */}
           <div className="markdown-content">
-            {/* Jika pakai react-markdown */}
             <ReactMarkdown>{content}</ReactMarkdown>
-            
-            {/* Jika tidak pakai react-markdown (Fallback text biasa dengan newlines) */}
-            {/* <p style={{whiteSpace: 'pre-wrap', lineHeight: '1.8'}}>
-                {content}
-              </p> 
-            */}
           </div>
 
           <div className="pro-tip-box">
@@ -129,15 +132,9 @@ export const ModulPage = () => {
       );
     }
     
-    // Placeholder untuk part 2 & 3 (Karena API baru kirim 1 materi utuh)
-    if (activeId === 2) {
-      return (
-        <div>
-          <h1>Rangkuman</h1>
-          <p>Fitur rangkuman otomatis akan segera hadir.</p>
-        </div>
-      );
-    }
+    // Placeholder Part 2 & 3
+    if (activeId === 2) return <div><h1>Rangkuman</h1><p>Fitur rangkuman otomatis akan segera hadir.</p></div>;
+    if (activeId === 3) return <div><h1>Kuis Latihan</h1><p>Soal latihan sedang disiapkan.</p></div>;
 
     return <div>Konten belum tersedia.</div>;
   };
@@ -156,11 +153,15 @@ export const ModulPage = () => {
       </header>
 
       <div className="modul-layout">
-        {/* Sidebar Kiri */}
+        
+        {/* SIDEBAR KIRI */}
         <aside className="sidebar-left">
           <div className="sidebar-header">
             <h3>Daftar Isi</h3>
+            <p>Selesaikan untuk membuka kuis</p>
           </div>
+          
+          {/* List Materi */}
           <div className="module-list">
             {modules.map((part) => (
               <div 
@@ -177,22 +178,41 @@ export const ModulPage = () => {
               </div>
             ))}
           </div>
+
+          {/* 3. TOMBOL MODUL KUIS DI KIRI BAWAH (DIKEMBALIKAN) */}
+          <div className={`quiz-section ${isQuizUnlocked ? 'active' : 'locked'}`}>
+            <div 
+              className={`module-item quiz-item ${isQuizUnlocked ? 'active' : 'locked'} ${isQuizView ? 'current-view' : ''}`}
+              onClick={handleQuizSidebarClick}
+            >
+              <div className="module-item-icon">
+                {isQuizUnlocked ? <Newspaper size={18} className='icon-quiz-active' /> : <Newspaper size={18} className='icon-quiz' />}
+              </div>
+              <div className="quiz-text-wrapper">
+                <span className="module-item-text">Modul Kuis</span>
+                <span className="quiz-subtitle">
+                  {isQuizUnlocked ? 'Siap dikerjakan' : 'Selesaikan materi dahulu'}
+                </span>
+              </div>
+            </div>
+          </div>
+
         </aside>
 
-        {/* Main Content */}
+        {/* MAIN CONTENT */}
         <main className="main-content">
           {renderContent()}
           
           {!isQuizView && (
             <div className="action-footer">
               <button className="btn-next-step" onClick={handleNext}>
-                {activeId === modules.length ? "Selesai" : "Lanjut"} <ArrowRight size={20} />
+                {activeId === modules.length ? "Selesai & Buka Kuis" : "Lanjut"} <ArrowRight size={20} />
               </button>
             </div>
           )}
         </main>
 
-        {/* Sidebar Kanan (Chatbot) */}
+        {/* SIDEBAR KANAN */}
         <aside className="sidebar-right">
           <div className="assistant-header">
             <div className="assistant-avatar"><Bot size={24} color="#0B4251" /></div>
@@ -202,10 +222,10 @@ export const ModulPage = () => {
             </div>
           </div>
           <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-             {/* Kirim context materi ke Chatbot agar dia pintar menjawab */}
-             <Chatbot initialContext={`User sedang membaca materi tentang: ${title}. Isi materi: ${content.substring(0, 500)}...`} />
+             <Chatbot initialContext={`User sedang membaca: ${title}. Isi: ${content.substring(0, 300)}...`} />
           </div>
         </aside>
+
       </div>
     </div>
   );
