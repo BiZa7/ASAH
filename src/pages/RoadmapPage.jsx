@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { optionCareer } from '../services/roadmapService'; // Sesuaikan path import
-import './RoadmapPage.css'; 
-import { 
-  ChartColumn, 
-  BarChart3, 
-  Clock, 
-  ChevronDown, 
-  ChevronUp, 
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { optionCareer } from "../services/roadmapService"; // Sesuaikan path import
+import AIOutputRenderer from "../components/AIOutputRenderer";
+import "./RoadmapPage.css";
+import {
+  ChartColumn,
+  BarChart3,
+  Clock,
+  ChevronDown,
+  ChevronUp,
   ArrowRight,
   X,
   BookOpen,
   CheckCircle2,
-  Lock
-} from 'lucide-react';
+  Lock,
+} from "lucide-react";
 
 export const RoadmapPage = () => {
   const navigate = useNavigate();
-  
+
   // --- STATE MANAGEMENT ---
   const [roadmapData, setRoadmapData] = useState([]); // Data yang sudah dikelompokkan
   const [loading, setLoading] = useState(true);
@@ -31,15 +32,13 @@ export const RoadmapPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Kirim string kosong "" agar backend (ilike '%%') mengembalikan SEMUA materi user
         const response = await optionCareer.getMaterialUser("");
 
-        if (response && response.data) {
-          // Lakukan pengelompokan data berdasarkan Phase
+        if (response.status == 200 && response.data) {
           const groupedData = processBackendData(response.data);
           setRoadmapData(groupedData);
         } else {
-          setRoadmapData([]);
+          navigate("/psikotes");
         }
       } catch (err) {
         console.error("Error loading roadmap:", err);
@@ -52,49 +51,104 @@ export const RoadmapPage = () => {
     fetchData();
   }, []);
 
+  const removeMarkdown = (markdown) => {
+    if (!markdown) return "";
+    return (
+      markdown
+        // 1. Hapus Header (#, ##, ###)
+        .replace(/#{1,6}\s?/g, "")
+        // 2. Hapus Bold/Italic (**, *, __, _)
+        .replace(/\*\*/g, "")
+        .replace(/\*/g, "")
+        .replace(/__/g, "")
+        .replace(/_/g, "")
+        // 3. Hapus Link [text](url) -> text
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        // 4. Hapus Code Block (```...```) dan inline code (`)
+        .replace(/`{3}[\s\S]*?`{3}/g, "")
+        .replace(/`/g, "")
+        // 5. Hapus list item markers (-, *, 1.)
+        .replace(/^\s*[-*+]\s+/gm, "")
+        .replace(/^\s*\d+\.\s+/gm, "")
+        // 6. Ganti baris baru dengan spasi
+        .replace(/\n/g, " ")
+        // 7. Rapikan spasi berlebih
+        .replace(/\s{2,}/g, " ")
+        .trim()
+    );
+  };
+
   // --- LOGIC: DATA TRANSFORMATION ---
   // Mengubah Flat List dari DB menjadi Hierarchical List untuk UI
-  const processBackendData = (items) => {
+const processBackendData = (items) => {
     const groups = {};
 
-    // 1. Grouping by Phase Name
-    items.forEach((item) => {
-      const phaseName = item.phase || "Uncategorized"; // Fallback jika phase null
+    items.forEach((item, index) => {
+      // 1. PHASE HANDLING
+      // Jika di backend tidak ada field 'phase' per item, 
+      // kamu bisa menggunakan default atau logic lain.
+      const phaseName = item.phase || "Phase Pembelajaran"; 
       
       if (!groups[phaseName]) {
         groups[phaseName] = {
-          id: Object.keys(groups).length + 1, // Generate ID untuk Phase
+          id: `phase-${index}`, // ID unik untuk grup fase
           title: phaseName,
-          duration: "Estimasi 1-2 Minggu", // Placeholder (Data durasi tidak ada di item)
-          subModules: []
+          duration: "Estimasi 1-2 Minggu",
+          subModules: [],
         };
       }
 
-      // 2. Mapping field DB ke field UI
-      // DB: judul, materi -> UI: title, description, details
+      const cleanDescription = removeMarkdown(item.materi);
+
+      // 2. TOPIC EXTRACTION
+      let finalTopics = [];
+      if (item.module && Array.isArray(item.module) && item.module.length > 0) {
+        finalTopics = item.module;
+      } else {
+        finalTopics = extractTopics(cleanDescription);
+      }
+
+      // 3. MAPPING DATA (PERBAIKAN UTAMA DISINI)
       groups[phaseName].subModules.push({
-        id: item.id,
-        title: item.judul,
-        description: item.materi ? item.materi.substring(0, 80) + "..." : "Pelajari materi ini.", // Preview text
-        tags: ["Materi Utama"], // Default tag
-        status: "available", // Default status (bisa disesuaikan logic-nya)
-        fullMateri: item.materi, // Simpan materi lengkap untuk modal
+        // Gunakan 'id_item' sesuai respon backend
+        id: item.id_item, 
+        
+        // Simpan id_roadmap juga jika nanti dibutuhkan
+        roadmapId: item.id_roadmap, 
+
+        // Mapping field lainnya sesuai JSON
+        title: item.judul, 
+        
+        description: cleanDescription
+          ? cleanDescription.substring(0, 100) + "..."
+          : "Pelajari materi ini untuk menguasai skill terkait.",
+        
+        tags: ["Materi Utama"],
+        status: "available",
+        
+        // Mapping konten materi
+        fullMateri: item.materi, 
+        
         details: {
           duration: "30-60 Menit",
-          topics: extractTopics(item.materi) // Helper untuk bikin bullet points dari teks materi
-        }
+          topics: finalTopics,
+        },
       });
     });
 
-    // Convert Object values ke Array agar bisa di-map
     return Object.values(groups);
   };
 
   // Helper sederhana untuk memecah teks materi jadi poin-poin (jika ada format markdown/list)
-  const extractTopics = (text) => {
-    if (!text) return ["Konsep Dasar", "Implementasi"];
-    // Coba split berdasarkan baris baru atau bullet points
-    return text.split('\n').filter(line => line.length > 5).slice(0, 4);
+  const extractTopics = (cleanText) => {
+    if (!cleanText) return ["Konsep Dasar", "Implementasi"];
+
+    // Ambil kalimat pertama atau pecah berdasarkan titik
+    // Ini lebih baik daripada split('\n') karena teks sudah dibersihkan jadi satu baris
+    const sentences = cleanText.split(". ");
+
+    // Ambil 3-4 frasa pertama yang cukup panjang (hindari angka/simbol saja)
+    return sentences.filter((s) => s.length > 10 && s.length < 50).slice(0, 3);
   };
 
   // --- HANDLERS ---
@@ -106,24 +160,28 @@ export const RoadmapPage = () => {
   const closeModal = () => setSelectedSubModule(null);
 
   const handleStartLearning = () => {
-    // Navigasi ke halaman modul detail dengan membawa data
-    navigate('/modul', { 
-      state: { 
+    // Navigasi ke halaman modul detail dengan membawa data lengkap
+    // Update: Tambahkan ID ke URL dan ke State
+    console.log("Selected Module:", selectedSubModule);
+    
+    navigate(`/modul/${selectedSubModule.id}`, {
+      state: {
         title: selectedSubModule.title,
-        content: selectedSubModule.fullMateri 
-      } 
+        content: selectedSubModule.fullMateri,
+        roadmapId: selectedSubModule.id, // <--- INI KUNCI UTAMANYA
+      },
     });
   };
 
   // --- RENDER LOADING / ERROR ---
-  if (loading) return <div className="loading-state">Memuat Roadmap Anda...</div>;
+  if (loading)
+    return <div className="loading-state">Memuat Roadmap Anda...</div>;
   if (error) return <div className="error-state">{error}</div>;
 
   // --- RENDER UTAMA (TIDAK BANYAK BERUBAH DARI UI ANDA) ---
   return (
     <div className="roadmap-page-wrapper">
       <div className="roadmap-content-container">
-        
         {/* Header */}
         <div className="roadmap-header">
           <div className="header-icon-box">
@@ -141,8 +199,12 @@ export const RoadmapPage = () => {
             <div>
               <h2 className="progress-title">Progres Keseluruhan</h2>
               <p className="progress-subtitle">
-                {/* Hitung total item */}
-                0 dari {roadmapData.reduce((acc, curr) => acc + curr.subModules.length, 0)} materi selesai
+                {/* Hitung total item */}0 dari{" "}
+                {roadmapData.reduce(
+                  (acc, curr) => acc + curr.subModules.length,
+                  0
+                )}{" "}
+                materi selesai
               </p>
             </div>
             <div className="progress-percentage-box">
@@ -151,7 +213,7 @@ export const RoadmapPage = () => {
             </div>
           </div>
           <div className="progress-bar-container">
-            <div className="progress-bar-fill" style={{ width: '0%' }}></div>
+            <div className="progress-bar-fill" style={{ width: "0%" }}></div>
           </div>
         </div>
 
@@ -166,8 +228,8 @@ export const RoadmapPage = () => {
               return (
                 <div key={module.id} className="module-wrapper">
                   {/* Phase Card */}
-                  <div 
-                    className={`module-card ${isExpanded ? 'active' : ''}`} 
+                  <div
+                    className={`module-card ${isExpanded ? "active" : ""}`}
                     onClick={() => toggleModule(module.id)}
                   >
                     <div className="module-icon-box">
@@ -178,11 +240,17 @@ export const RoadmapPage = () => {
                       <div className="module-meta">
                         <Clock size={14} />
                         <span>{module.duration}</span>
-                        <span style={{marginLeft: 8, fontSize: 12}}>({module.subModules.length} Materi)</span>
+                        <span style={{ marginLeft: 8, fontSize: 12 }}>
+                          ({module.subModules.length} Materi)
+                        </span>
                       </div>
                     </div>
                     <div className="module-action">
-                      {isExpanded ? <ChevronUp color="#0B4251" size={20} /> : <ChevronDown color="#0B4251" size={20} />}
+                      {isExpanded ? (
+                        <ChevronUp color="#0B4251" size={20} />
+                      ) : (
+                        <ChevronDown color="#0B4251" size={20} />
+                      )}
                     </div>
                   </div>
 
@@ -190,11 +258,15 @@ export const RoadmapPage = () => {
                   {isExpanded && module.subModules.length > 0 && (
                     <div className="sub-modules-container">
                       {module.subModules.map((sub, index) => {
-                        const isLocked = sub.status === 'locked';
+                        const isLocked = sub.status === "locked";
 
                         return (
-                          <div key={sub.id} className={`sub-module-card ${isLocked ? 'locked-card' : ''}`}>
-                            
+                          <div
+                            key={sub.id}
+                            className={`sub-module-card ${
+                              isLocked ? "locked-card" : ""
+                            }`}
+                          >
                             <div className="sub-module-number">{index + 1}</div>
 
                             <div className="sub-module-content">
@@ -203,34 +275,47 @@ export const RoadmapPage = () => {
                                 {isLocked ? (
                                   <span className="badge-gray">Locked</span>
                                 ) : (
-                                  <span className="badge-yellow">Available</span>
+                                  <span className="badge-yellow">
+                                    Available
+                                  </span>
                                 )}
                               </div>
-                              
+
                               <p className="sub-desc">{sub.description}</p>
-                              
+
                               <div className="sub-tags">
                                 <span className="tag-label">TOPICS</span>
                                 <div className="tags-row">
-                                  {sub.details.topics.slice(0, 3).map((tag, idx) => (
-                                    <span key={idx} className="source-tag">
-                                      <BookOpen size={10} style={{marginRight:4}}/> 
-                                      {tag.substring(0, 15)}...
-                                    </span>
-                                  ))}
+                                  {sub.details.topics
+                                    .slice(0, 3)
+                                    .map((tag, idx) => (
+                                      <span key={idx} className="source-tag">
+                                        <BookOpen
+                                          size={10}
+                                          style={{ marginRight: 4 }}
+                                        />
+                                        {tag.substring(0, 15)}...
+                                      </span>
+                                    ))}
                                 </div>
                               </div>
                             </div>
 
-                            <button 
-                              className={`btn-arrow-action ${isLocked ? 'btn-locked' : ''}`}
+                            <button
+                              className={`btn-arrow-action ${
+                                isLocked ? "btn-locked" : ""
+                              }`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (!isLocked) openModal(sub);
                               }}
                               disabled={isLocked}
                             >
-                              {isLocked ? <Lock size={18} color="#9CA3AF" /> : <ArrowRight size={20} />}
+                              {isLocked ? (
+                                <Lock size={18} color="#9CA3AF" />
+                              ) : (
+                                <ArrowRight size={20} />
+                              )}
                             </button>
                           </div>
                         );
@@ -250,13 +335,18 @@ export const RoadmapPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">{selectedSubModule.title}</h2>
-              <button className="btn-close" onClick={closeModal}><X size={24} /></button>
+              <button className="btn-close" onClick={closeModal}>
+                <X size={24} />
+              </button>
             </div>
 
-            <p className="modal-desc" style={{maxHeight: '100px', overflowY: 'auto'}}>
-              {/* Menampilkan isi materi lengkap di sini jika mau */}
-              {selectedSubModule.fullMateri}
-            </p>
+            {/* --- BAGIAN INI DIMODIFIKASI --- */}
+            {/* Gunakan wrapper div untuk mengatur scroll jika materi panjang */}
+            <div className="modal-materi-preview">
+              {/* Gunakan Renderer Estetik */}
+              <AIOutputRenderer content={selectedSubModule.fullMateri} />
+            </div>
+            {/* ------------------------------- */}
 
             <div className="modal-badge-row">
               <div className="duration-badge">
@@ -265,6 +355,7 @@ export const RoadmapPage = () => {
               </div>
             </div>
 
+            {/* ... Bagian Poin Pembelajaran & Tombol Mulai Belajar tetap sama ... */}
             <div className="modal-learning-section">
               <h3>Poin Pembelajaran</h3>
               <ul className="learning-list">
@@ -277,10 +368,12 @@ export const RoadmapPage = () => {
               </ul>
             </div>
 
-            <button className="btn-start-learning" onClick={handleStartLearning}>
+            <button
+              className="btn-start-learning"
+              onClick={handleStartLearning}
+            >
               Mulai Belajar <ArrowRight size={18} />
             </button>
-
           </div>
         </div>
       )}

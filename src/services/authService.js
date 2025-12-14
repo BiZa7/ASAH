@@ -1,10 +1,21 @@
-import api from '../utils/api';
+import api from "../utils/api";
 
 export const authService = {
   // Login dengan Google
   googleLogin: async (code) => {
     try {
-      const response = await api.post('/login/google', { code });
+      const response = await api.post("/login/google", { code });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  getUserByEmail: async (email) => {
+    try {
+      const response = await api.get(`/users/me`, {
+        params: { email: email },
+      });
       return response.data;
     } catch (error) {
       throw error.response?.data || error.message;
@@ -13,25 +24,25 @@ export const authService = {
 
   // Logout
   logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
   },
 
   // Get current user
   getCurrentUser: () => {
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem("user");
     return user ? JSON.parse(user) : null;
   },
 
   // Save tokens
   saveTokens: (accessToken, refreshToken) => {
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
   },
 
   // Save user data
   saveUser: (user) => {
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem("user", JSON.stringify(user));
   },
 };

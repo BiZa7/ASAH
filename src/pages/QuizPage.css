@@ -290,3 +290,272 @@
   background-color: #D9AD38;
   transform: translateY(-2px);
 }
+
+/* --- LAYOUT UTAMA (Dari desain 'awal') --- */
+.quiz-page-wrapper {
+  min-height: 100vh;
+  background-color: #FAFAFA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.center-content {
+  justify-content: center;
+  text-align: center;
+}
+
+/* Header saat Quiz Berjalan */
+.quiz-header-simple {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.question-counter-badge {
+  background-color: #FFF7ED;
+  color: #B45309;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.quiz-content-container {
+  width: 100%;
+  max-width: 800px; /* Lebar card disesuaikan agar proporsional */
+}
+
+.quiz-card-wrapper {
+  width: 100%;
+  background-color: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 30px; 
+}
+
+/* --- PROGRESS BAR --- */
+.quiz-progress-section {
+  width: 100%;
+  margin-bottom: 0px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background-color: #E5E7EB;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #F2C864; /* Kuning Emas */
+  border-radius: 10px;
+  transition: width 0.3s ease-in-out;
+}
+
+/* --- STYLING SOAL (Pengganti QuestionCard) --- */
+.question-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.question-text-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.q-number {
+  color: #F2C864;
+  margin-right: 8px;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-button {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.option-button:hover {
+  border-color: #D1D5DB;
+  background-color: #F9FAFB;
+}
+
+.option-button.selected {
+  border-color: #F2C864;
+  background-color: #FFFBEB; /* Kuning sangat muda */
+  box-shadow: 0 0 0 1px #F2C864;
+}
+
+.opt-key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: #F3F4F6;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #4B5563;
+  font-size: 14px;
+}
+
+.option-button.selected .opt-key {
+  background-color: #F2C864;
+  color: #0B4251;
+}
+
+.opt-text {
+  font-size: 16px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* --- NAVIGASI --- */
+.quiz-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #F3F4F6;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex: none;
+  width: auto;
+  min-width: 140px;
+  padding: 14px 24px;
+  border-radius: 10px;
+  background-color: #ffffff; 
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.nav-btn.prev {
+  color: #0B4251;
+}
+.nav-btn.prev:hover:not(:disabled) {
+  background-color: #FFF7ED;
+  transform: translateY(-2px);
+}
+.nav-btn.prev:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-btn.next, .nav-btn.finish {
+  color: #0B4251;
+}
+.nav-btn.next:hover, .nav-btn.finish:hover {
+  background-color: #F2C864;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(242, 200, 100, 0.3);
+}
+.nav-btn.finish:disabled {
+  background-color: #E5E7EB;
+  color: #9CA3AF;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- RESULT / OUTCOME CARD --- */
+.outcome-card {
+  background-color: white;
+  padding: 50px;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 700px;
+  width: 100%;
+}
+
+.outcome-icon { margin-bottom: 20px; }
+.outcome-title { font-size: 28px; font-weight: 800; color: #111827; margin-bottom: 8px; }
+.outcome-subtitle { font-size: 16px; color: #6B7280; margin-bottom: 30px; }
+
+.score-box {
+  background-color: #F9FAFB;
+  width: 100%;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: 1px solid #E5E7EB;
+}
+.score-number { font-size: 40px; font-weight: 800; color: #0B4251; }
+.score-label { font-size: 14px; color: #6B7280; margin-top: 4px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  border-radius: 12px;
+}
+.stat-item.green { background-color: #DCFCE7; color: #166534; }
+.stat-item.red { background-color: #FEE2E2; color: #991B1B; }
+.stat-item.grey { background-color: #F3F4F6; color: #374151; }
+.stat-val { font-size: 20px; font-weight: 700; }
+.stat-lbl { font-size: 13px; font-weight: 500; }
+
+.outcome-actions { display: flex; gap: 16px; }
+
+.btn-outline {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 24px;
+  border: 2px solid #E5E7EB;
+  background-color: white; color: #374151;
+  border-radius: 8px; font-weight: 600; cursor: pointer;
+}
+.btn-outline:hover { background-color: #F9FAFB; border-color: #D1D5DB; }
+
+.btn-primary {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 24px;
+  background-color: #F2C864; color: #0B4251;
+  border: none; border-radius: 8px; font-weight: 700; cursor: pointer;
+}
+.btn-primary:hover { background-color: #D9AD38; }

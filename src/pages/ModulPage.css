@@ -461,3 +461,47 @@
     justify-content: center;
   }
 }
+
+/* 1. Container Utama Sidebar */
+.sidebar-right {
+  width: 380px;          /* Tentukan lebar fix yang nyaman */
+  min-width: 380px;      /* KUNCI UTAMA: Mencegah browser mengecilkan elemen ini */
+  flex-shrink: 0;        /* KUNCI UTAMA: Memberitahu flexbox "Jangan sentuh lebar saya" */
+  
+  height: 93vh;         /* Full tinggi layar */
+  border-left: 1px solid #e0e0e0; /* Garis pemisah */
+  background-color: #fff;
+  
+  /* Supaya Header dan Chatbot tersusun rapi vertikal */
+  display: flex;         
+  flex-direction: column;
+  position: sticky;      /* Opsional: Agar tetap diam saat main content di-scroll */
+  top: 0;
+  right: 0;
+}
+
+/* 2. Header Assistant */
+.assistant-header {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #fff;
+  flex-shrink: 0;       /* Header tidak boleh menyusut vertikal */
+}
+
+/* 3. Wrapper Chatbot (Area Pesan) */
+.chatbot-wrapper {
+  flex: 1;              /* Mengambil sisa ruang tinggi yang tersedia (PENTING) */
+  overflow: hidden;     /* Menghindari scroll ganda */
+  position: relative;   /* Agar komponen chatbot absolute bisa refer ke sini */
+  display: flex;        /* Memastikan child chatbot mengisi penuh */
+  flex-direction: column;
+}
+
+/* Tambahan: Pastikan komponen Chatbot Anda tingginya 100% */
+.chatbot-wrapper > div { 
+  height: 100%;
+  width: 100%;
+}

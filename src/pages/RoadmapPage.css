@@ -499,3 +499,38 @@
   .sub-module-card { padding: 15px; gap: 10px; }
   .sub-module-number { width: 24px; height: 24px; font-size: 12px; }
 }
+
+/* RoadmapPage.css */
+
+/* Wrapper untuk konten materi di dalam Modal */
+.modal-materi-preview {
+  max-height: 200px; /* Batasi tinggi agar tidak memenuhi layar */
+  overflow-y: auto;  /* Scroll jika konten panjang */
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f9fafb; /* Latar belakang sedikit abu */
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Kustomisasi Tampilan Renderer KHUSUS di dalam Modal (Override) */
+.modal-materi-preview .ai-output-container {
+  font-size: 14px; /* Font lebih kecil */
+  line-height: 1.5;
+}
+
+.modal-materi-preview h1, 
+.modal-materi-preview h2, 
+.modal-materi-preview h3 {
+  font-size: 16px !important; /* Judul tidak boleh terlalu besar */
+  margin-top: 10px !important;
+  margin-bottom: 5px !important;
+}
+
+.modal-materi-preview p {
+  margin-bottom: 8px !important;
+}
+
+/* Sembunyikan blok kode yang terlalu besar di preview (Opsional) */
+/* .modal-materi-preview .code-block-wrapper { display: none; } */
+

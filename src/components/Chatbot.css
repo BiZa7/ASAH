@@ -171,3 +171,99 @@
   text-align: center;
   margin-top: 8px;
 }
+
+/* ... CSS yang sudah ada ... */
+
+/* Animasi Typing (Titik-titik) */
+.typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px !important;
+  min-width: 60px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: #fff;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* Style untuk Sumber Referensi */
+.chat-sources {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.chat-sources ul {
+  padding-left: 14px;
+  margin: 4px 0 0 0;
+}
+
+/* Style Error */
+.error-bubble {
+  background-color: #EF4444 !important; /* Merah */
+  color: white !important;
+}
+
+.chat-input-field:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.bot-markdown-content .ai-output-container {
+  color: inherit !important; 
+  font-size: 14px !important; /* Ukuran font lebih kecil untuk chat */
+  line-height: 1.5 !important;
+}
+
+/* Kurangi margin paragraf agar chat tidak terlalu panjang ke bawah */
+.bot-markdown-content p {
+  margin-bottom: 0.8rem !important; 
+}
+
+/* Hapus margin atas pada elemen pertama agar pas di bubble */
+.bot-markdown-content > .ai-output-container > *:first-child {
+  margin-top: 0 !important;
+}
+
+/* Perkecil Heading di dalam chat */
+.bot-markdown-content h1,
+.bot-markdown-content h2,
+.bot-markdown-content h3 {
+  margin-top: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 1.1rem !important; /* Jangan terlalu besar */
+  border-bottom: none !important; /* Hapus garis bawah h1 agar lebih bersih */
+}
+
+/* Perkecil padding blok kode */
+.bot-markdown-content .code-highlighter {
+  padding: 0.8rem !important;
+  font-size: 0.8rem !important;
+}
+
+.bot-markdown-content .code-header {
+  padding: 0.3rem 0.8rem !important;
+  font-size: 0.7rem !important;
+}
+
+/* List di dalam chat */
+.bot-markdown-content ul, 
+.bot-markdown-content ol {
+  padding-left: 1.2rem !important;
+  margin-bottom: 0.8rem !important;
+}
