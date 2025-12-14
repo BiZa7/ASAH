@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Sesuaikan dengan URL backend NestJS Anda
-const API_BASE_URL = 'http://localhost:3000'; // atau port backend Anda
+const API_BASE_URL = 'https://raspy-annemarie-asah-9608d35e.koyeb.app'; // atau port backend Anda
 
 const api = axios.create({
   baseURL: API_BASE_URL,

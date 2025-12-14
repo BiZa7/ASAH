@@ -29,26 +29,64 @@ export const RoadmapPage = () => {
 
   // --- FETCHING DATA ---
   useEffect(() => {
-    const fetchData = async () => {
+    let isMounted = true; // Mencegah update state jika komponen sudah di-unmount
+
+    const fetchData = async (isBackground = false) => {
       try {
-        setLoading(true);
+        // Hanya set loading true jika ini BUKAN background fetch (fetch pertama kali)
+        if (!isBackground) {
+          setLoading(true);
+        }
+
         const response = await optionCareer.getMaterialUser("");
 
-        if (response.status == 200 && response.data) {
-          const groupedData = processBackendData(response.data);
-          setRoadmapData(groupedData);
-        } else {
-          navigate("/psikotes");
+        const roadmapExist = await optionCareer.getRoadmap();
+
+        if (isMounted) {
+          if (roadmapExist.status == 200 && roadmapExist.data) {
+            const groupedData = processBackendData(response.data);
+
+            // Update data roadmap secara real-time
+            setRoadmapData(groupedData);
+
+            // Opsional: Jika backend mengirim status selesai, kita bisa stop polling disini
+            // Contoh: if (response.data.status === 'COMPLETED') clearInterval(intervalId);
+          } else {
+            // Jika data kosong di fetch pertama, mungkin redirect.
+            // Tapi jika sedang polling, biarkan saja (mungkin AI sedang bekerja).
+            if (
+              !isBackground &&
+              (!response.data || response.data.length === 0)
+            ) {
+              navigate("/psikotes");
+            }
+          }
         }
       } catch (err) {
         console.error("Error loading roadmap:", err);
-        setError("Gagal memuat materi roadmap.");
+        // Jangan tampilkan error full screen jika gagal saat background fetch
+        if (!isBackground) setError("Gagal memuat materi roadmap.");
       } finally {
-        setLoading(false);
+        if (isMounted && !isBackground) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchData();
+    // 1. Panggil fetch pertama kali (Loading screen muncul)
+    fetchData(false);
+
+    // 2. Set Interval untuk Polling setiap 5 detik (5000ms)
+    // Ini akan mengambil data baru tanpa loading screen
+    const intervalId = setInterval(() => {
+      fetchData(true);
+    }, 5000);
+
+    // Cleanup function: Hentikan interval saat user pindah halaman
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, []);
 
   const removeMarkdown = (markdown) => {
@@ -80,15 +118,15 @@ export const RoadmapPage = () => {
 
   // --- LOGIC: DATA TRANSFORMATION ---
   // Mengubah Flat List dari DB menjadi Hierarchical List untuk UI
-const processBackendData = (items) => {
+  const processBackendData = (items) => {
     const groups = {};
 
     items.forEach((item, index) => {
       // 1. PHASE HANDLING
-      // Jika di backend tidak ada field 'phase' per item, 
+      // Jika di backend tidak ada field 'phase' per item,
       // kamu bisa menggunakan default atau logic lain.
-      const phaseName = item.phase || "Phase Pembelajaran"; 
-      
+      const phaseName = item.phase || "Phase Pembelajaran";
+
       if (!groups[phaseName]) {
         groups[phaseName] = {
           id: `phase-${index}`, // ID unik untuk grup fase
@@ -111,24 +149,24 @@ const processBackendData = (items) => {
       // 3. MAPPING DATA (PERBAIKAN UTAMA DISINI)
       groups[phaseName].subModules.push({
         // Gunakan 'id_item' sesuai respon backend
-        id: item.id_item, 
-        
+        id: item.id_item,
+
         // Simpan id_roadmap juga jika nanti dibutuhkan
-        roadmapId: item.id_roadmap, 
+        roadmapId: item.id_roadmap,
 
         // Mapping field lainnya sesuai JSON
-        title: item.judul, 
-        
+        title: item.judul,
+
         description: cleanDescription
           ? cleanDescription.substring(0, 100) + "..."
           : "Pelajari materi ini untuk menguasai skill terkait.",
-        
+
         tags: ["Materi Utama"],
         status: "available",
-        
+
         // Mapping konten materi
-        fullMateri: item.materi, 
-        
+        fullMateri: item.materi,
+
         details: {
           duration: "30-60 Menit",
           topics: finalTopics,
@@ -163,7 +201,7 @@ const processBackendData = (items) => {
     // Navigasi ke halaman modul detail dengan membawa data lengkap
     // Update: Tambahkan ID ke URL dan ke State
     console.log("Selected Module:", selectedSubModule);
-    
+
     navigate(`/modul/${selectedSubModule.id}`, {
       state: {
         title: selectedSubModule.title,

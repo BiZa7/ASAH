@@ -162,4 +162,15 @@ export const optionCareer = {
       throw error.response?.data || error.message;
     }
   },
+
+  getRoadmap: async () => {
+    let token = localStorage.getItem("accessToken");
+    if (token && token.startsWith('"')) token = token.slice(1, -1);
+
+    const response = await api.get("ai/roadmap", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data;
+  }
 };
