@@ -65,45 +65,82 @@ export const QuizPage = () => {
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
 
-  // --- FETCH DATA (Logic dari 'sekarang') ---
+  // Fungsi untuk fetch data kuis dengan opsi polling
+  const fetchQuizData = async (isPolling = false) => {
+    try {
+      // Jika polling, jangan set loading full screen agar tidak kedip-kedip
+      if (!isPolling) setLoading(true); 
+      
+      const response = await quizService.getQuizByRoadmapId(roadmapId);
+      const rawData = response.data.questions || response.data || [];
+
+      if (rawData.length > 0) {
+        const formattedQuestions = rawData.map((q) => ({
+          id: q.id_quiz || Math.random(),
+          question: q.question,
+          options: [
+            { key: "A", text: q.opsi_a },
+            { key: "B", text: q.opsi_b },
+            { key: "C", text: q.opsi_c },
+            { key: "D", text: q.opsi_d },
+          ],
+          correctAnswer: q.correct_answer,
+        }));
+        setQuestions(formattedQuestions);
+        setLoading(false);
+        setError(null);
+        return true; // BERHASIL: Data ditemukan
+      } else {
+        // Jika data kosong (sedang generate), jangan set error fatal dulu jika sedang polling
+        if (!isPolling) setError("Sedang menyiapkan kuis, mohon tunggu...");
+        return false; // GAGAL: Data belum ada
+      }
+    } catch (err) {
+      console.error("Error fetching quiz:", err);
+      if (!isPolling) setError("Gagal memuat kuis.");
+      return false; // GAGAL: Error koneksi dll
+    } finally {
+      if (!isPolling) setLoading(false);
+    }
+  };
+
+  // --- MODIFIKASI USE EFFECT UNTUK POLLING ---
   useEffect(() => {
     if (!roadmapId) {
-      setError("ID Materi tidak ditemukan. Silakan kembali ke roadmap.");
+      setError("ID Materi tidak ditemukan.");
       setLoading(false);
       return;
     }
 
-    const fetchQuizData = async () => {
-      try {
-        setLoading(true);
-        const response = await quizService.getQuizByRoadmapId(roadmapId);
-        const rawData = response.data.questions || response.data || [];
+    let intervalId = null;
 
-        if (rawData.length > 0) {
-          const formattedQuestions = rawData.map((q) => ({
-            id: q.id_quiz || Math.random(),
-            question: q.question,
-            options: [
-              { key: "A", text: q.opsi_a },
-              { key: "B", text: q.opsi_b },
-              { key: "C", text: q.opsi_c },
-              { key: "D", text: q.opsi_d },
-            ],
-            correctAnswer: q.correct_answer,
-          }));
-          setQuestions(formattedQuestions);
-        } else {
-          setError("Kuis belum tersedia untuk materi ini.");
-        }
-      } catch (err) {
-        console.error("Error fetching quiz:", err);
-        setError("Gagal memuat kuis. Pastikan server berjalan.");
-      } finally {
-        setLoading(false);
+    const initFetch = async () => {
+      // Coba fetch pertama kali
+      const success = await fetchQuizData(false);
+
+      // Jika fetch pertama gagal/kosong (berarti sedang generate), mulai polling
+      if (!success) {
+        setLoading(true); // Tetap tampilkan loading screen
+        
+        intervalId = setInterval(async () => {
+          console.log("Polling kuis..."); // Debugging
+          const polledSuccess = await fetchQuizData(true);
+          
+          if (polledSuccess) {
+            // Jika berhasil dapat data, hentikan polling
+            clearInterval(intervalId);
+            setLoading(false); // Hilangkan loading
+          }
+        }, 3000); // Cek setiap 3 detik
       }
     };
 
-    fetchQuizData();
+    initFetch();
+
+    // Cleanup: Matikan interval jika user pindah halaman
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [roadmapId]);
 
   // --- HANDLERS ---
@@ -160,7 +197,7 @@ export const QuizPage = () => {
 
     // D. AMBIL DATA BARU (Tunggu sampai selesai)
     // Fungsi ini akan melakukan fetch dan di akhirnya melakukan setLoading(false)
-    await fetchQuestions();
+    await fetchQuizData();
   };
 
   const handleBackToRoadmap = () => {
@@ -270,7 +307,7 @@ export const QuizPage = () => {
   return (
     <div className="quiz-page-wrapper">
       <div className="quiz-header-simple">
-        <img src="/AsahLogo.svg" alt="Logo" style={{ height: "40px" }} />{" "}
+        <img src="/AsahLogo.svg" alt="Logo" style={{ height: "60px" }} />{" "}
         {/* Sesuaikan path logo */}
         <div className="question-counter-badge">
           {currentQuestionIndex + 1}/{questions.length} Pertanyaan

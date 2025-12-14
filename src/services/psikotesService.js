@@ -30,7 +30,7 @@ export const psikotesService = {
 
     console.log(`payload: ${payload}`);  
 
-    const response = await fetch("http://localhost:3000/psychotest/submit", {
+    const response = await fetch("https://raspy-annemarie-asah-9608d35e.koyeb.app/psychotest/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

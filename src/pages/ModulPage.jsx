@@ -243,19 +243,7 @@ export const ModulPage = () => {
   return (
     <div className="modul-page-wrapper">
       {/* HEADER */}
-      <header className="modul-header">
-        <div className="header-left">
-          <img src={ASAH} alt="ASAH Logo" className="header-logo" />
-        </div>
-        <div className="header-right">
-          <button
-            className="btn-back-dashboard"
-            onClick={() => navigate("/roadmap")}
-          >
-            <ArrowLeft size={16} /> Kembali ke Roadmap
-          </button>
-        </div>
-      </header>
+      
 
       <div className="modul-layout">
         {/* SIDEBAR KIRI (Navigation) */}

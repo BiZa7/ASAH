@@ -3,6 +3,7 @@
   position: fixed; /* KUNCI 1: Paksa elemen menempel di layar */
   top: 0;
   left: 0;
+  padding-top: 65px; /* Sesuaikan jika ada header global */
   width: 100vw;    /* Lebar penuh layar */
   height: 100vh;   /* Tinggi penuh layar */
   overflow: hidden; /* KUNCI 2: Hilangkan scrollbar window/body */
@@ -19,7 +20,7 @@
 .modul-header {
   height: 70px;
   background-color: white;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 0px solid #E5E7EB;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,6 +48,7 @@
   flex: 1; /* Mengambil sisa tinggi setelah header */
   height: calc(100vh - 70px); /* KUNCI 3: Paksa tinggi layout = Layar - Header */
   overflow: hidden; /* Mencegah layout ini meluber */
+  margin-top: 0px;
 }
 
 /* --- LEFT SIDEBAR --- */
@@ -464,20 +466,16 @@
 
 /* 1. Container Utama Sidebar */
 .sidebar-right {
-  width: 380px;          /* Tentukan lebar fix yang nyaman */
-  min-width: 380px;      /* KUNCI UTAMA: Mencegah browser mengecilkan elemen ini */
-  flex-shrink: 0;        /* KUNCI UTAMA: Memberitahu flexbox "Jangan sentuh lebar saya" */
+  width: 380px;          /* Lebar tetap */
+  min-width: 380px;      /* Mencegah penyusutan */
+  background-color: #F9FAFB;
+  border-left: 1px solid #E5E7EB;
   
-  height: 93vh;         /* Full tinggi layar */
-  border-left: 1px solid #e0e0e0; /* Garis pemisah */
-  background-color: #fff;
-  
-  /* Supaya Header dan Chatbot tersusun rapi vertikal */
+  /* KUNCI PERBAIKAN: */
   display: flex;         
-  flex-direction: column;
-  position: sticky;      /* Opsional: Agar tetap diam saat main content di-scroll */
-  top: 0;
-  right: 0;
+  flex-direction: column; 
+  height: 100%;          /* Mengisi tinggi penuh dari parent .modul-layout */
+  overflow: hidden;      /* Mencegah scrollbar luar */
 }
 
 /* 2. Header Assistant */
