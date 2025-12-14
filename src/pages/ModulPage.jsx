@@ -185,18 +185,6 @@ export const ModulPage = () => {
           <div className="breadcrumbs">
             Modul Pembelajaran &gt; {title}
             {/* Tambahkan Span ini untuk melihat ID */}
-            <span
-              style={{
-                marginLeft: "10px",
-                fontSize: "0.8em",
-                color: "#999",
-                border: "1px solid #ccc",
-                padding: "2px 5px",
-                borderRadius: "4px",
-              }}
-            >
-              ID Item: {roadmapId}
-            </span>
           </div>
           <h1 className="content-title">{title}</h1>
 
