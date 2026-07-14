@@ -30,31 +30,18 @@ export function LoginPage() {
         // Kirim authorization code ke backend
         const data = await authService.googleLogin(codeResponse.code);
 
-        console.log("codeResponse: ", codeResponse.data);
-        
-
         // Simpan tokens dan user data
         authService.saveTokens(data.accessToken, data.refreshToken);
         authService.saveUser(data.user);
 
-        console.log("Login berhasil:", data.user);
-
         // 3. LOGIC REDIRECT DINAMIS DI SINI
         // Cek apakah ada request redirect dari Landing Page?
         // Jika tidak ada (null/undefined), default ke '/home'
-
-        console.log("data:", data.user.email);
-
-        const existUser = await authService.getUserByEmail(data.user.email);
-
-        console.log("exist user:", existUser.status);
-
-        if (existUser.status == 200) {
-          console.log("MASUK");
-          navigate("/roadmap");
-        } else {
+        if (data.isNewUser) {
           const destination = location.state?.redirectPath || "/psikotes";
           navigate(destination);
+        } else {
+          navigate("/roadmap");
         }
       } catch (err) {
         console.error("Login error:", err);

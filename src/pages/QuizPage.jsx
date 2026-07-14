@@ -123,7 +123,6 @@ export const QuizPage = () => {
         setLoading(true); // Tetap tampilkan loading screen
         
         intervalId = setInterval(async () => {
-          console.log("Polling kuis..."); // Debugging
           const polledSuccess = await fetchQuizData(true);
           
           if (polledSuccess) {

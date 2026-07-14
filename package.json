@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "test:security": "node scripts/security-check.mjs",
+    "test:all": "npm run build && npm run test:security",
     "preview": "vite preview"
   },
   "dependencies": {

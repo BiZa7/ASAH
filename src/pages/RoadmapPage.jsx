@@ -200,8 +200,6 @@ export const RoadmapPage = () => {
   const handleStartLearning = () => {
     // Navigasi ke halaman modul detail dengan membawa data lengkap
     // Update: Tambahkan ID ke URL dan ke State
-    console.log("Selected Module:", selectedSubModule);
-
     navigate(`/modul/${selectedSubModule.id}`, {
       state: {
         title: selectedSubModule.title,

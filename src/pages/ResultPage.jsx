@@ -64,8 +64,6 @@ export const ResultPage = () => {
   // 2. UPDATE FUNGSI GENERATE
   const handleGenerateRoadmap = async () => {
     if (!selectedCardId) return;
-    console.log(`selectedCardId: ${selectedCardId}`);
-    
 
     try {
       setIsGenerating(true);
