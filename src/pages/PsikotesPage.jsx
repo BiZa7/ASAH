@@ -90,14 +90,28 @@ export const PsikotesPage = () => {
       };
 
       const result = await psikotesService.submitAnswers(payload);
-      await optionCareer.getCareerRecommendation();
 
-      if (result.success) {
-        navigate("/results");
+      if (!result.success) {
+        throw new Error(result.message || "Backend tidak menerima hasil psikotes.");
       }
+
+      try {
+        await optionCareer.getCareerRecommendation();
+      } catch (recommendationError) {
+        const message =
+          recommendationError?.response?.data?.message ||
+          recommendationError?.message ||
+          recommendationError ||
+          "Rekomendasi karier gagal dibuat.";
+
+        console.error("Error generating recommendation:", recommendationError);
+        alert(`Jawaban psikotes berhasil disimpan, tetapi rekomendasi karier gagal dibuat: ${message}`);
+      }
+
+      navigate("/results");
     } catch (err) {
       console.error("Error submitting test:", err);
-      alert(`Gagal mengirim jawaban: ${err.message}`);
+      alert(`Gagal mengirim jawaban: ${err.message || err}`);
     } finally {
       setLoading(false);
     }

@@ -145,21 +145,19 @@ export const optionCareer = {
 
   generateFullRoadmap: async (idCareer) => {
     try {
-      let token = localStorage.getItem("accessToken");
-      if (token && token.startsWith('"')) token = token.slice(1, -1);
-
-      // Panggil endpoint controller di atas
       const response = await api.post(
-        "/ai/generate-roadmap", // Sesuaikan prefix controller Anda
-        { id_career: idCareer },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        "/ai/generate-roadmap",
+        { id_career: idCareer }
       );
 
       return response.data;
     } catch (error) {
-      throw error.response?.data || error.message;
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Gagal membuat roadmap.";
+      throw new Error(message);
     }
   },
 

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import './ResultPage.css';
 // Import service
 import { optionCareer } from '../services/roadmapService'; 
-import api from '../utils/api';
 
 // Assets
 import trophy from "../assets/trophy.svg";
@@ -71,26 +70,9 @@ export const ResultPage = () => {
     try {
       setIsGenerating(true);
 
-      // --- PERUBAHAN DISINI ---
-      // Kita memanggil endpoint yang menjalankan KEDUANYA sekaligus
-      
-      // 1. Ambil Token
-      let token = localStorage.getItem("accessToken");
-      if (token && token.startsWith('"')) token = token.slice(1, -1);
-
-      // 2. Request ke Backend
-      // Asumsi endpoint backend: POST /roadmap/generate-full
-      const response = await api.post(
-        "/ai/roadmap", 
-        { id_career: selectedCardId }, // Body
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      console.log("Full Generation Success:", response);
-
+      await optionCareer.selectedCareer({ id_career: selectedCardId });
       await optionCareer.generateFullRoadmap(selectedCardId);
 
-      // 3. Navigasi setelah SELESAI semua (Struktur + Materi)
       navigate('/roadmap-loading', { 
           state: { 
               selectedCareerId: selectedCardId,
@@ -100,9 +82,12 @@ export const ResultPage = () => {
 
     } catch (err) {
       console.error("Gagal generate roadmap:", err);
-      alert("Terjadi kesalahan atau waktu habis. Silakan cek halaman roadmap Anda.");
-      // Opsional: Tetap navigate karena mungkin backend masih memproses di background
-      // navigate('/roadmap-loading'); 
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        err ||
+        "Terjadi kesalahan atau waktu habis. Silakan cek halaman roadmap Anda.";
+      alert(`Gagal membuat roadmap: ${message}`);
     } finally {
       setIsGenerating(false);
     }

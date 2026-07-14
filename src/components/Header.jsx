@@ -15,7 +15,11 @@ export const Header = () => {
   };*/}
 
   const goToDashboard = () => {
-    navigate('/dashboard');
+    navigate('/roadmap');
+  };
+
+  const goToProfile = () => {
+    navigate('/profile');
   };
 
   return (
@@ -33,20 +37,20 @@ export const Header = () => {
               {/* Dashboard Link */}
 
               <NavLink 
-                to="/dashboard"
+                to="/roadmap"
                 className={({ isActive }) => `dashboard-link ${isActive ? 'active' : ''}`}
               >
-                Dashboard
+                Course
               </NavLink>
 
               {/* User Profile */}
               <div className="profile-section">
-                <div className="profile-image">
+                <button className="profile-image" type="button" onClick={goToProfile} aria-label="Buka profil">
                   <img 
-                    src={`https://ui-avatars.com/api/?name=${user.name || 'User'}&background=E8F4F8&color=2C5F6F&size=40`}
+                    src={user.image || `https://ui-avatars.com/api/?name=${user.name || 'User'}&background=E8F4F8&color=2C5F6F&size=40`}
                     alt="Profile"
                   />
-                </div>
+                </button>
               </div>
 
               {/* Logout Button (optional) 

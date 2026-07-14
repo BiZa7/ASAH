@@ -13,6 +13,7 @@ import { RoadmapLoadingPage } from "./pages/RoadmapLoadingPage";
 import { RoadmapPage } from "./pages/RoadmapPage";
 import { ModulPage } from "./pages/ModulPage";
 import { QuizPage } from "./pages/QuizPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { Header } from "./components/Header";
 import { authService } from "./services/authService";
 
@@ -39,6 +40,24 @@ const AppContent = () => {
         <Route path="/" element={<LandingPage />} />
 
         <Route path="/login" element={<LoginPage />} />
+
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/roadmap" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/roadmap" />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/psikotes"
@@ -78,6 +97,15 @@ const AppContent = () => {
 
         {/* 2. TAMBAHKAN ROUTE MODUL */}
         <Route path="/modul/:roadmapId" element={<ModulPage />} />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/quiz"

@@ -13,40 +13,30 @@ export const psikotesService = {
 
   // Submit jawaban psikotes
   submitAnswers: async (payload) => {
-    // 1. Ambil token mentah
-    let token = localStorage.getItem("accessToken");
-
-    // 2. CEK & BERSIHKAN: Jika token ada tanda kutip ekstra (misal: '"eyJh..."'), hapus.
-    if (token && token.startsWith('"') && token.endsWith('"')) {
-      token = token.slice(1, -1);
+    try {
+      const response = await api.post("/psychotest/submit", payload);
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Gagal mengirim jawaban.";
+      throw new Error(message);
     }
+  },
 
-    // Debugging: Cek di console browser apakah token bersih (tanpa kutip) atau null
-    console.log("Token yang dikirim:", token);
-
-    if (!token) {
-      throw new Error("Token tidak ditemukan. Silakan login ulang.");
+  startRetake: async () => {
+    try {
+      const response = await api.post("/psychotest/retake");
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Gagal memulai psikotes ulang.";
+      throw new Error(message);
     }
-
-    console.log(`payload: ${payload}`);  
-
-    const response = await fetch("https://raspy-annemarie-asah-9608d35e.koyeb.app/psychotest/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Pastikan spasi setelah Bearer
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      // Baca error message dari backend jika ada
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(
-        errData.message || "Gagal mengirim jawaban (401 Unauthorized)"
-      );
-    }
-
-    return await response.json();
   },
 };

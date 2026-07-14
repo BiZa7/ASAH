@@ -13,7 +13,7 @@ export const authService = {
 
   getUserByEmail: async (email) => {
     try {
-      const response = await api.get(`/users/me`, {
+      const response = await api.get(`/users/by-email`, {
         params: { email: email },
       });
       return response.data;
